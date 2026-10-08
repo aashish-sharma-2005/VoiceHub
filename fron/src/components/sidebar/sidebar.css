@@ -1,0 +1,596 @@
+/* =========================================================
+   VOICEHUB SIDEBAR
+========================================================= */
+
+.sidebar {
+  width: 274px;
+  min-width: 274px;
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px 13px 14px;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e5e7eb;
+
+  overflow-y: auto;
+
+  flex-shrink: 0;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d9dee8 transparent;
+}
+
+
+/* =========================================================
+   SIDEBAR SCROLLBAR
+========================================================= */
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #d9dee8;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #c4cad5;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 8px;
+
+  margin-bottom: 22px;
+}
+
+.sidebar-brand-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #5b5ce2,
+      #4847c7
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 6px 16px rgba(79, 70, 229, 0.22);
+}
+
+.sidebar-brand-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-brand-name {
+  color: #182238;
+
+  font-size: 19px;
+
+  font-weight: 750;
+
+  line-height: 1.1;
+
+  letter-spacing: -0.3px;
+}
+
+.sidebar-brand-subtitle {
+  margin-top: 5px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.7px;
+}
+
+
+/* =========================================================
+   LOCATION
+========================================================= */
+
+.sidebar-location {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 0 5px 12px;
+
+  padding: 11px 12px;
+
+  border: 1px solid #e8ecf2;
+
+  border-radius: 11px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+}
+
+.sidebar-location svg {
+  flex-shrink: 0;
+
+  color: #5146e5;
+}
+
+.sidebar-location div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.sidebar-location span {
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.4px;
+}
+
+.sidebar-location strong {
+  color: #334155;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+.sidebar-role {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 0 5px 18px;
+
+  padding: 8px 10px;
+
+  border-radius: 8px;
+
+  background: #f5f3ff;
+}
+
+.sidebar-role-label {
+  color: #8b7fc9;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+.sidebar-role-value {
+  padding: 4px 8px;
+
+  border-radius: 6px;
+
+  background: #e9e7ff;
+
+  color: #5146e5;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  text-transform: capitalize;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  flex: 1;
+}
+
+
+/* =========================================================
+   NAVIGATION LINK
+========================================================= */
+
+.sidebar-link {
+  width: 100%;
+  min-height: 43px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 10px 14px;
+
+  border-radius: 11px;
+
+  color: #52647a;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.sidebar-link svg {
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+}
+
+.sidebar-link span {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   LINK HOVER
+========================================================= */
+
+.sidebar-link:hover {
+  background: #f5f6fb;
+
+  color: #4f46e5;
+
+  transform: translateX(1px);
+}
+
+
+/* =========================================================
+   ACTIVE LINK
+========================================================= */
+
+.sidebar-link.active {
+  background: #eef0ff;
+
+  color: #4f46e5;
+
+  font-weight: 700;
+}
+
+.sidebar-link.active svg {
+  stroke-width: 2.4;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
+
+.sidebar-bottom {
+  margin-top: 18px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid #edf0f4;
+}
+
+
+/* =========================================================
+   USER PROFILE
+========================================================= */
+
+.sidebar-user {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px;
+
+  border: 1px solid #e8ecf2;
+
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+
+/* =========================================================
+   USER AVATAR
+========================================================= */
+
+.sidebar-user-avatar {
+  width: 37px;
+  height: 37px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #e8e9ff,
+      #dcdfff
+    );
+
+  color: #5146e5;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   USER INFORMATION
+========================================================= */
+
+.sidebar-user-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.sidebar-user-info strong {
+  color: #25334a;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-info span {
+  color: #8795a8;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+.sidebar-logout {
+  width: 100%;
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 9px;
+
+  padding: 9px;
+
+  border: 1px solid #e8ecf2;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.sidebar-logout svg {
+  flex-shrink: 0;
+}
+
+.sidebar-logout:hover {
+  background: #fff5f5;
+
+  border-color: #fecaca;
+
+  color: #dc2626;
+
+  transform: translateY(-1px);
+}
+
+.sidebar-logout:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   TABLET / COLLAPSED SIDEBAR
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 80px;
+    min-width: 80px;
+
+    padding: 20px 10px;
+  }
+
+  /* Hide text */
+
+  .sidebar-brand-text,
+  .sidebar-location,
+  .sidebar-role,
+  .sidebar-link span,
+  .sidebar-user-info,
+  .sidebar-logout span {
+    display: none;
+  }
+
+
+  /* Brand */
+
+  .sidebar-brand {
+    justify-content: center;
+
+    padding: 0;
+
+    margin-bottom: 25px;
+  }
+
+
+  /* Brand icon */
+
+  .sidebar-brand-icon {
+    width: 46px;
+    height: 46px;
+  }
+
+
+  /* Navigation */
+
+  .sidebar-nav {
+    align-items: center;
+  }
+
+  .sidebar-link {
+    width: 50px;
+
+    justify-content: center;
+
+    padding: 13px;
+
+    border-radius: 12px;
+  }
+
+
+  /* User */
+
+  .sidebar-user {
+    justify-content: center;
+
+    padding: 8px;
+  }
+
+  .sidebar-user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+
+  /* Logout */
+
+  .sidebar-logout {
+    width: 46px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    padding: 10px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .sidebar {
+    display: none;
+  }
+}

@@ -1351,3 +1351,543 @@ img {
     padding: 15px;
   }
 }
+/* =========================================================
+   VOICEHUB SIDEBAR / LAYOUT OVERRIDE
+========================================================= */
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f7fa;
+}
+
+.app-body {
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+  width: 274px;
+  min-width: 274px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px 13px 14px;
+
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 0 8px;
+  margin-bottom: 26px;
+}
+
+.sidebar-brand-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #5146e5;
+  color: #ffffff;
+
+  border-radius: 12px;
+
+  box-shadow: 0 5px 12px rgba(79, 70, 229, 0.2);
+}
+
+.sidebar-brand-content {
+  min-width: 0;
+}
+
+.sidebar-brand-title {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #182238;
+
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.sidebar-live {
+  padding: 4px 7px;
+
+  background: #ecfdf5;
+
+  border: 1px solid #a7f3d0;
+
+  border-radius: 7px;
+
+  color: #059669;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-brand-subtitle {
+  margin-top: 5px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+}
+
+
+/* =========================================================
+   REPORT BUTTON
+========================================================= */
+
+.report-button {
+  width: 100%;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  margin-bottom: 25px;
+
+  border-radius: 12px;
+
+  background: #5146e5;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  box-shadow: 0 5px 12px rgba(79, 70, 229, 0.2);
+
+  transition: 0.2s ease;
+}
+
+.report-button:hover {
+  background: #453bd2;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   SIDEBAR SECTIONS
+========================================================= */
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.sidebar-section-title {
+  padding: 0 14px;
+  margin-bottom: 7px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   SIDEBAR LINKS
+========================================================= */
+
+.sidebar-link {
+  width: 100%;
+  min-height: 43px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 10px 14px;
+
+  border-radius: 11px;
+
+  color: #52647a;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-link svg {
+  flex-shrink: 0;
+}
+
+.sidebar-link:hover {
+  background: #f5f6fb;
+  color: #4f46e5;
+}
+
+.sidebar-link.active {
+  background: #eef0ff;
+  color: #4f46e5;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   ACTIVE DOT
+========================================================= */
+
+.sidebar-active-dot {
+  width: 7px;
+  height: 7px;
+
+  margin-left: auto;
+
+  border-radius: 50%;
+
+  background: #5146e5;
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.new-badge {
+  margin-left: auto;
+
+  padding: 4px 7px;
+
+  background: #eef0ff;
+
+  border-radius: 6px;
+
+  color: #5146e5;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.sidebar-count {
+  margin-left: auto;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.notification-count {
+  width: 21px;
+  height: 21px;
+
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #5146e5;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   SYSTEM
+========================================================= */
+
+.system-section {
+  margin-top: 27px;
+}
+
+
+/* =========================================================
+   USER PROFILE
+========================================================= */
+
+.sidebar-user {
+  min-height: 66px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: auto;
+  padding: 10px 9px;
+
+  border: 1px solid #e8ecf2;
+  border-radius: 12px;
+
+  background: #f8fafc;
+}
+
+.sidebar-user-avatar {
+  width: 37px;
+  height: 37px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #e6e9ff;
+  color: #5146e5;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sidebar-user-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.sidebar-user-info strong {
+  color: #25334a;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.sidebar-user-info span {
+  display: flex;
+  align-items: center;
+
+  gap: 3px;
+
+  color: #8795a8;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+.sidebar-logout {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #7c8a9d;
+
+  cursor: pointer;
+}
+
+.sidebar-logout:hover {
+  color: #5146e5;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+
+  padding: 20px 30px 35px;
+
+  background: #f5f7fa;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+  display: none;
+}
+
+
+/* =========================================================
+   DESKTOP EXPLORE WIDTH
+========================================================= */
+
+.explore-page {
+  max-width: 1500px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 80px;
+    min-width: 80px;
+
+    padding: 20px 10px;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .sidebar-brand-content,
+  .report-button span,
+  .sidebar-section-title,
+  .sidebar-link span,
+  .sidebar-user-info,
+  .sidebar-logout {
+    display: none;
+  }
+
+  .report-button {
+    width: 48px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .sidebar-active-dot {
+    display: none !important;
+  }
+
+  .sidebar-user {
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+}
+.sort-dropdown {
+  position: relative;
+}
+
+.sort-dropdown .filter-select.sort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.sort-arrow-open {
+  transform: rotate(180deg);
+}
+
+.sort-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 190px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  z-index: 100;
+}
+
+.sort-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #334155;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sort-option:hover {
+  background: #f1f5f9;
+}
+
+.sort-option.selected {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.sort-check {
+  font-size: 15px;
+  font-weight: 700;
+}

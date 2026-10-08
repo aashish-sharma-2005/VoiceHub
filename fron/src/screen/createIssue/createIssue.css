@@ -1,0 +1,796 @@
+.create-issue-page {
+  min-height: 100vh;
+  padding: 34px 40px 60px;
+
+  background: #f6f8fc;
+
+  color: #171b26;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.create-issue-header {
+  max-width: 1050px;
+
+  margin: 0 auto 28px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 22px;
+}
+
+.back-button {
+  margin-top: 5px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 9px 13px;
+
+  border: 1px solid #d9deea;
+
+  border-radius: 9px;
+
+  background: white;
+
+  color: #4c5566;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.back-button:hover {
+  background: #f3f5fa;
+
+  border-color: #c7cedd;
+}
+
+.create-issue-header h1 {
+  margin: 0;
+
+  color: #171b26;
+
+  font-size: 32px;
+
+  line-height: 1.2;
+
+  font-weight: 750;
+
+  letter-spacing: -0.7px;
+}
+
+.create-issue-header p {
+  margin: 7px 0 0;
+
+  color: #687183;
+
+  font-size: 15px;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.create-issue-container {
+  max-width: 1050px;
+
+  margin: 0 auto;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.create-issue-card {
+  padding: 34px 38px;
+
+  background: white;
+
+  border: 1px solid #e0e4ec;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 12px 35px rgba(31, 43, 75, 0.07),
+    0 2px 7px rgba(31, 43, 75, 0.03);
+}
+
+
+/* =====================================================
+   SECTION HEADING
+===================================================== */
+
+.form-section-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding-bottom: 25px;
+
+  margin-bottom: 25px;
+
+  border-bottom: 1px solid #edf0f5;
+}
+
+.section-heading-icon {
+  width: 43px;
+  height: 43px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #eef1ff;
+
+  color: #4c60ac;
+}
+
+.form-section-heading h2 {
+  margin: 0;
+
+  font-size: 20px;
+
+  color: #1c2130;
+
+  font-weight: 700;
+}
+
+.form-section-heading p {
+  margin: 4px 0 0;
+
+  color: #788091;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   ALERTS
+===================================================== */
+
+.form-alert {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 13px 15px;
+
+  margin-bottom: 22px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+}
+
+.error-alert {
+  color: #9c3030;
+
+  background: #fff1f1;
+
+  border: 1px solid #ffd5d5;
+}
+
+.success-alert {
+  color: #277348;
+
+  background: #eefaf3;
+
+  border: 1px solid #ccefd9;
+}
+
+
+/* =====================================================
+   FIELDS
+===================================================== */
+
+.field-group {
+  margin-bottom: 25px;
+}
+
+.field-group > label,
+.image-heading label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #252a35;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+.field-group label > span:not(.optional) {
+  margin-left: 4px;
+
+  color: #c34a4a;
+}
+
+.field-group input,
+.field-group select,
+.field-group textarea {
+  width: 100%;
+
+  border: 1.5px solid #d1d6e0;
+
+  border-radius: 10px;
+
+  outline: none;
+
+  background: white;
+
+  color: #222733;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field-group input,
+.field-group select {
+  height: 52px;
+
+  padding: 0 14px;
+}
+
+.field-group textarea {
+  padding: 14px;
+
+  resize: vertical;
+
+  min-height: 150px;
+
+  line-height: 1.55;
+}
+
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus {
+  border-color: #5267b4;
+
+  box-shadow:
+    0 0 0 3px rgba(82, 103, 180, 0.11);
+}
+
+.field-group input::placeholder,
+.field-group textarea::placeholder {
+  color: #9299a6;
+}
+
+.field-footer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: 6px;
+}
+
+.field-footer small,
+.field-help {
+  color: #7b8392;
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+.field-footer span {
+  color: #8b929f;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   LOCATION
+===================================================== */
+
+.location-input {
+  height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  border: 1.5px solid #d1d6e0;
+
+  border-radius: 10px;
+
+  background: white;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.location-input:focus-within {
+  border-color: #5267b4;
+
+  box-shadow:
+    0 0 0 3px rgba(82, 103, 180, 0.11);
+}
+
+.location-input svg {
+  margin-left: 15px;
+
+  flex-shrink: 0;
+
+  color: #6876ad;
+}
+
+.location-input input {
+  height: 100% !important;
+
+  border: none !important;
+
+  box-shadow: none !important;
+
+  padding-left: 11px !important;
+}
+
+.field-help {
+  display: block;
+
+  margin-top: 6px;
+}
+
+
+/* =====================================================
+   IMAGES
+===================================================== */
+
+.image-heading {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.image-heading label {
+  margin-bottom: 3px;
+}
+
+.image-heading small {
+  color: #7b8392;
+
+  font-size: 12px;
+}
+
+.optional {
+  margin-left: 8px;
+
+  padding: 3px 7px;
+
+  border-radius: 5px;
+
+  background: #f0f2f7;
+
+  color: #737b89;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.image-count {
+  padding: 5px 9px;
+
+  border-radius: 7px;
+
+  background: #eef1ff;
+
+  color: #4d60a8;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.image-preview-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 12px;
+
+  margin-bottom: 13px;
+}
+
+.image-preview {
+  aspect-ratio: 1;
+
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+
+  background: #eef1f6;
+
+  border: 1px solid #dfe3eb;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.remove-image {
+  position: absolute;
+
+  top: 7px;
+  right: 7px;
+
+  width: 29px;
+  height: 29px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: rgba(25, 29, 38, 0.75);
+
+  color: white;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(4px);
+}
+
+.remove-image:hover {
+  background: rgba(155, 44, 44, 0.9);
+}
+
+.image-preview > span {
+  position: absolute;
+
+  left: 7px;
+  bottom: 7px;
+
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 6px;
+
+  background: rgba(25, 29, 38, 0.72);
+
+  color: white;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.upload-box {
+  min-height: 82px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 14px 17px;
+
+  border: 1.5px dashed #c7cdda;
+
+  border-radius: 11px;
+
+  background: #fafbfe;
+
+  color: #566070;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.upload-box:hover {
+  border-color: #6678bb;
+
+  background: #f6f7fc;
+}
+
+.upload-icon {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #eef1ff;
+
+  color: #5367b0;
+}
+
+.upload-box div:nth-child(2) {
+  flex: 1;
+}
+
+.upload-box strong {
+  display: block;
+
+  color: #303746;
+
+  font-size: 14px;
+}
+
+.upload-box p {
+  margin: 4px 0 0;
+
+  color: #89909e;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   INFO
+===================================================== */
+
+.submission-info {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-top: 5px;
+
+  padding: 13px 15px;
+
+  border-radius: 9px;
+
+  background: #f5f7fc;
+
+  color: #606a7b;
+}
+
+.submission-info svg {
+  margin-top: 1px;
+
+  flex-shrink: 0;
+
+  color: #5c6eaf;
+}
+
+.submission-info p {
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.form-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 30px;
+
+  padding-top: 25px;
+
+  border-top: 1px solid #edf0f5;
+}
+
+.cancel-button,
+.submit-issue-button {
+  height: 49px;
+
+  padding: 0 21px;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.cancel-button {
+  border: 1px solid #d2d7e1;
+
+  background: white;
+
+  color: #555e6d;
+}
+
+.cancel-button:hover {
+  background: #f6f7fa;
+}
+
+.submit-issue-button {
+  min-width: 155px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      #566bbd,
+      #455aa9
+    );
+
+  color: white;
+
+  box-shadow:
+    0 5px 12px rgba(63, 81, 158, 0.22);
+}
+
+.submit-issue-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 18px rgba(63, 81, 158, 0.28);
+}
+
+.cancel-button:disabled,
+.submit-issue-button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid rgba(255, 255, 255, 0.4);
+
+  border-top-color: white;
+
+  border-radius: 50%;
+
+  animation: button-spin 0.7s linear infinite;
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+  .create-issue-page {
+    padding: 25px 16px 40px;
+  }
+
+  .create-issue-header {
+    gap: 12px;
+  }
+
+  .create-issue-header h1 {
+    font-size: 26px;
+  }
+
+  .create-issue-header p {
+    font-size: 13px;
+  }
+
+  .create-issue-card {
+    padding: 25px 20px;
+  }
+
+  .image-preview-grid {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-button,
+  .submit-issue-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 450px) {
+  .create-issue-header {
+    display: block;
+  }
+
+  .back-button {
+    margin-bottom: 15px;
+  }
+
+  .image-preview-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .field-footer {
+    align-items: flex-start;
+  }
+}

@@ -1,209 +1,460 @@
 import {
-  BarChart3,
-  Compass,
-  FilePlus2,
-  ClipboardList,
-  Bookmark,
-  Bell,
-  HelpCircle,
-  Settings,
-  MapPin,
-  LogOut,
-  Flag,
+    BarChart3,
+    Compass,
+    FilePlus2,
+    ClipboardList,
+    Bookmark,
+    Bell,
+    HelpCircle,
+    Settings,
+    MapPin,
+    LogOut,
+    Flag,
+    Users,
+    Tags,
+    ShieldCheck,
+    AlertTriangle,
+    MessageSquare,
+    History,
+    CheckCircle2,
+    XCircle,
+    Activity,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
+import { logout } from "../../store/loginSlice";
+import './sidebar.css'
 function Sidebar() {
-  return (
-    <aside className="sidebar">
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-      {/* =========================
-          BRAND
-      ========================= */}
+    /*
+     * First try Redux.
+     * If Redux has not loaded yet, fall back to storage.
+     */
+    const reduxUser = useSelector(
+        (state) => state.login?.user
+    );
 
-      <div className="sidebar-brand">
+    let storedUser = null;
 
-        <div className="sidebar-brand-icon">
-          <Flag size={24} />
-        </div>
+    try {
+        const userData =
+            localStorage.getItem("voicehub_user") ||
+            sessionStorage.getItem("voicehub_user");
 
-        <div className="sidebar-brand-content">
+        storedUser = userData
+            ? JSON.parse(userData)
+            : null;
+    } catch (error) {
+        console.error(
+            "Invalid stored user data:",
+            error
+        );
+    }
 
-          <div className="sidebar-brand-title">
-            VoiceHub
-            <span className="sidebar-live">
-              ● LIVE
-            </span>
-          </div>
+    const user = reduxUser || storedUser;
 
-          <div className="sidebar-brand-subtitle">
-            CIVIC ACTION HUB
-          </div>
+    const role = user?.role || "user";
 
-        </div>
+    /*
+     * Active navigation styling
+     */
+    const linkClass = ({ isActive }) =>
+        `sidebar-link ${isActive ? "active" : ""}`;
 
-      </div>
+    /*
+     * Logout
+     */
+    const handleLogout = () => {
+        dispatch(logout());
 
+        localStorage.removeItem("voicehub_token");
+        localStorage.removeItem("voicehub_user");
 
-      {/* =========================
-          REPORT BUTTON
-      ========================= */}
+        sessionStorage.removeItem("voicehub_token");
+        sessionStorage.removeItem("voicehub_user");
 
-      <NavLink
-        to="/create-issue"
-        className="report-button"
-      >
-        <FilePlus2 size={20} />
-        <span>Report an Issue</span>
-      </NavLink>
+        navigate("/login", { replace: true });
+    };
 
+    /*
+     * USER SIDEBAR
+     */
+    const userLinks = (
+        <>
+            <NavLink
+                to="/"
+                className={linkClass}
+            >
+                <BarChart3 size={19} />
+                <span>Dashboard</span>
+            </NavLink>
 
-      {/* =========================
-          MAIN MENU
-      ========================= */}
+            <NavLink
+                to="/explore"
+                className={linkClass}
+            >
+                <Compass size={19} />
+                <span>Explore Issues</span>
+            </NavLink>
 
-      <div className="sidebar-section">
+            <NavLink
+                to="/create-issue"
+                className={linkClass}
+            >
+                <FilePlus2 size={19} />
+                <span>Report an Issue</span>
+            </NavLink>
 
-        <div className="sidebar-section-title">
-          MAIN MENU
-        </div>
+            <NavLink
+                to="/my-issues"
+                className={linkClass}
+            >
+                <ClipboardList size={19} />
+                <span>My Issues</span>
+            </NavLink>
 
+            <NavLink
+                to="/saved-issues"
+                className={linkClass}
+            >
+                <Bookmark size={19} />
+                <span>Saved Issues</span>
+            </NavLink>
 
-        <NavLink
-          to="/"
-          className="sidebar-link"
-        >
-          <BarChart3 size={19} />
-          <span>Dashboard</span>
-        </NavLink>
+            <NavLink
+                to="/notifications"
+                className={linkClass}
+            >
+                <Bell size={19} />
+                <span>Notifications</span>
+            </NavLink>
 
+            <NavLink
+                to="/help"
+                className={linkClass}
+            >
+                <HelpCircle size={19} />
+                <span>Help</span>
+            </NavLink>
 
-        <NavLink
-          to="/explore"
-          className="sidebar-link"
-        >
-          <Compass size={19} />
+            <NavLink
+                to="/settings"
+                className={linkClass}
+            >
+                <Settings size={19} />
+                <span>Settings</span>
+            </NavLink>
+        </>
+    );
 
-          <span>Explore Issues</span>
+    /*
+     * MODERATOR SIDEBAR
+     */
+    const moderatorLinks = (
+        <>
+            <NavLink
+                to="/moderator"
+                className={linkClass}
+            >
+                <BarChart3 size={19} />
+                <span>Dashboard</span>
+            </NavLink>
 
-          <span className="sidebar-active-dot"></span>
-        </NavLink>
+            <NavLink
+                to="/moderator/pending"
+                className={linkClass}
+            >
+                <ClipboardList size={19} />
+                <span>Pending Reports</span>
+            </NavLink>
 
+            <NavLink
+                to="/moderator/issues"
+                className={linkClass}
+            >
+                <Flag size={19} />
+                <span>All Issues</span>
+            </NavLink>
 
-        <NavLink
-          to="/create-issue"
-          className="sidebar-link"
-        >
-          <FilePlus2 size={19} />
+            <NavLink
+                to="/moderator/approved"
+                className={linkClass}
+            >
+                <CheckCircle2 size={19} />
+                <span>Approved Issues</span>
+            </NavLink>
 
-          <span>Report an Issue</span>
+            <NavLink
+                to="/moderator/dismissed"
+                className={linkClass}
+            >
+                <XCircle size={19} />
+                <span>Dismissed Issues</span>
+            </NavLink>
 
-          <span className="new-badge">
-            New
-          </span>
-        </NavLink>
+            <NavLink
+                to="/moderator/reported-content"
+                className={linkClass}
+            >
+                <AlertTriangle size={19} />
+                <span>Reported Content</span>
+            </NavLink>
 
+            <NavLink
+                to="/moderator/comments"
+                className={linkClass}
+            >
+                <MessageSquare size={19} />
+                <span>Comments</span>
+            </NavLink>
 
-        <NavLink
-          to="/my-issues"
-          className="sidebar-link"
-        >
-          <ClipboardList size={19} />
+            <NavLink
+                to="/moderator/history"
+                className={linkClass}
+            >
+                <History size={19} />
+                <span>Moderation History</span>
+            </NavLink>
 
-          <span>My Issues</span>
+            <NavLink
+                to="/notifications"
+                className={linkClass}
+            >
+                <Bell size={19} />
+                <span>Notifications</span>
+            </NavLink>
 
-          <span className="sidebar-count">
-            2
-          </span>
-        </NavLink>
+            <NavLink
+                to="/help"
+                className={linkClass}
+            >
+                <HelpCircle size={19} />
+                <span>Help</span>
+            </NavLink>
 
+            <NavLink
+                to="/settings"
+                className={linkClass}
+            >
+                <Settings size={19} />
+                <span>Settings</span>
+            </NavLink>
+        </>
+    );
 
-        <button className="sidebar-link">
-          <Bookmark size={19} />
+    /*
+     * ADMIN SIDEBAR
+     */
+    const adminLinks = (
+        <>
+            <NavLink
+                to="/admin"
+                className={linkClass}
+            >
+                <BarChart3 size={19} />
+                <span>Dashboard</span>
+            </NavLink>
 
-          <span>Saved Issues</span>
-        </button>
+            <NavLink
+                to="/admin/issues"
+                className={linkClass}
+            >
+                <Flag size={19} />
+                <span>All Issues</span>
+            </NavLink>
 
+            <NavLink
+                to="/admin/pending"
+                className={linkClass}
+            >
+                <ClipboardList size={19} />
+                <span>Pending Issues</span>
+            </NavLink>
 
-        <NavLink
-          to="/notifications"
-          className="sidebar-link"
-        >
-          <Bell size={19} />
+            <NavLink
+                to="/admin/users"
+                className={linkClass}
+            >
+                <Users size={19} />
+                <span>Users</span>
+            </NavLink>
 
-          <span>Notifications</span>
+            <NavLink
+                to="/admin/moderators"
+                className={linkClass}
+            >
+                <ShieldCheck size={19} />
+                <span>Moderators</span>
+            </NavLink>
 
-          <span className="notification-count">
-            3
-          </span>
-        </NavLink>
+            <NavLink
+                to="/admin/categories"
+                className={linkClass}
+            >
+                <Tags size={19} />
+                <span>Categories</span>
+            </NavLink>
 
-      </div>
+            <NavLink
+                to="/admin/status"
+                className={linkClass}
+            >
+                <CheckCircle2 size={19} />
+                <span>Issue Status</span>
+            </NavLink>
 
+            <NavLink
+                to="/admin/reports"
+                className={linkClass}
+            >
+                <AlertTriangle size={19} />
+                <span>Reports</span>
+            </NavLink>
 
-      {/* =========================
-          SYSTEM
-      ========================= */}
+            <NavLink
+                to="/admin/comments"
+                className={linkClass}
+            >
+                <MessageSquare size={19} />
+                <span>Comments</span>
+            </NavLink>
 
-      <div className="sidebar-section system-section">
+            <NavLink
+                to="/notifications"
+                className={linkClass}
+            >
+                <Bell size={19} />
+                <span>Notifications</span>
+            </NavLink>
 
-        <div className="sidebar-section-title">
-          SYSTEM
-        </div>
+            <NavLink
+                to="/admin/analytics"
+                className={linkClass}
+            >
+                <Activity size={19} />
+                <span>Platform Analytics</span>
+            </NavLink>
 
+            <NavLink
+                to="/admin/activity-logs"
+                className={linkClass}
+            >
+                <History size={19} />
+                <span>Activity Logs</span>
+            </NavLink>
 
-        <button className="sidebar-link">
+            <NavLink
+                to="/settings"
+                className={linkClass}
+            >
+                <Settings size={19} />
+                <span>Settings</span>
+            </NavLink>
 
-          <HelpCircle size={19} />
+            <NavLink
+                to="/help"
+                className={linkClass}
+            >
+                <HelpCircle size={19} />
+                <span>Help</span>
+            </NavLink>
+        </>
+    );
 
-          <span>Help & Support</span>
+    return (
+        <aside className="sidebar">
 
-        </button>
+            {/* BRAND */}
+            <div className="sidebar-brand">
+                <div className="sidebar-brand-icon">
+                    <Flag size={20} />
+                </div>
 
+                <div className="sidebar-brand-text">
+                    <span className="sidebar-brand-name">
+                        VoiceHub
+                    </span>
 
-        <button className="sidebar-link">
+                    <span className="sidebar-brand-subtitle">
+                        Community Voice
+                    </span>
+                </div>
+            </div>
 
-          <Settings size={19} />
+            {/* LOCATION */}
+            <div className="sidebar-location">
+                <MapPin size={16} />
 
-          <span>Settings</span>
+                <div>
+                    <span>Current Location</span>
+                    <strong>Your Community</strong>
+                </div>
+            </div>
 
-        </button>
+            {/* ROLE */}
+            <div className="sidebar-role">
+                <span className="sidebar-role-label">
+                    Account
+                </span>
 
-      </div>
+                <span className="sidebar-role-value">
+                    {role.charAt(0).toUpperCase() +
+                        role.slice(1)}
+                </span>
+            </div>
 
+            {/* NAVIGATION */}
+            <nav className="sidebar-nav">
 
-      {/* =========================
-          USER
-      ========================= */}
+                {role === "admin" && adminLinks}
 
-      <div className="sidebar-user">
+                {role === "moderator" &&
+                    moderatorLinks}
 
-        <div className="sidebar-user-avatar">
-          AS
-        </div>
+                {role === "user" && userLinks}
 
-        <div className="sidebar-user-info">
+            </nav>
 
-          <strong>
-            Alex Morgan
-          </strong>
+            {/* USER PROFILE / LOGOUT */}
+            <div className="sidebar-bottom">
 
-          <span>
-            <MapPin size={11} />
-            Downtown Ward 4
-          </span>
+                <div className="sidebar-user">
+                    <div className="sidebar-user-avatar">
+                        {user?.name
+                            ? user.name
+                                  .charAt(0)
+                                  .toUpperCase()
+                            : "U"}
+                    </div>
 
-        </div>
+                    <div className="sidebar-user-info">
+                        <strong>
+                            {user?.name || "User"}
+                        </strong>
 
-        <button className="sidebar-logout">
-          <LogOut size={17} />
-        </button>
+                        <span>
+                            {user?.email ||
+                                "user@voicehub.com"}
+                        </span>
+                    </div>
+                </div>
 
-      </div>
+                <button
+                    type="button"
+                    className="sidebar-logout"
+                    onClick={handleLogout}
+                >
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                </button>
 
-    </aside>
-  );
+            </div>
+        </aside>
+    );
 }
 
 export default Sidebar;
