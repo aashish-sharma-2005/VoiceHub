@@ -1,0 +1,510 @@
+.pending-issues-page {
+  min-height: 100%;
+  padding: 30px;
+  background: #f6f8fb;
+}
+
+/* HEADER */
+
+.pending-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pending-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.pending-header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: #eef2ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+.pending-breadcrumb span {
+  color: #94a3b8;
+}
+
+.pending-page-header h1 {
+  margin: 0;
+  font-size: 27px;
+  color: #111827;
+}
+
+.pending-page-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.pending-refresh-button {
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  border-radius: 9px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pending-refresh-button:hover {
+  background: #f8fafc;
+}
+
+/* STATS */
+
+.pending-stats {
+  display: flex;
+  gap: 15px;
+  margin: 24px 0;
+}
+
+.pending-stat-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 220px;
+}
+
+.pending-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-stat-icon.pending {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.pending-stat-card span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.pending-stat-card strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 23px;
+  color: #111827;
+}
+
+.pending-info-card {
+  flex: 1;
+  background: #eef2ff;
+  color: #4f46e5;
+  border-radius: 13px;
+  padding: 15px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+/* LIST */
+
+.pending-issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pending-issue-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 230px 1fr auto;
+  min-height: 205px;
+  transition: 0.2s ease;
+}
+
+.pending-issue-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+}
+
+/* IMAGE */
+
+.pending-issue-image {
+  position: relative;
+  height: 100%;
+  min-height: 205px;
+  background: #e5e7eb;
+}
+
+.pending-issue-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pending-status-badge {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  background: #fff7ed;
+  color: #c2410c;
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* CONTENT */
+
+.pending-issue-content {
+  padding: 20px 22px;
+}
+
+.pending-issue-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.pending-category {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pending-date {
+  color: #94a3b8;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pending-issue-content h2 {
+  margin: 14px 0 7px;
+  color: #111827;
+  font-size: 20px;
+}
+
+.pending-description {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 650px;
+}
+
+.pending-meta {
+  margin-top: 14px;
+}
+
+.pending-meta span {
+  color: #64748b;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pending-reporter {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 17px;
+}
+
+.reporter-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pending-reporter small {
+  display: block;
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.pending-reporter strong {
+  display: block;
+  color: #334155;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ACTIONS */
+
+.pending-issue-actions {
+  width: 135px;
+  padding: 20px 17px;
+  border-left: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+}
+
+.pending-issue-actions button {
+  width: 100%;
+  min-height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.view-issue-button {
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+}
+
+.view-issue-button:hover {
+  background: #f8fafc;
+}
+
+.approve-issue-button {
+  border: 0;
+  background: #16a34a;
+  color: white;
+}
+
+.approve-issue-button:hover {
+  background: #15803d;
+}
+
+.dismiss-issue-button {
+  border: 0;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.dismiss-issue-button:hover {
+  background: #fee2e2;
+}
+
+.pending-issue-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* STATES */
+
+.pending-state {
+  min-height: 350px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+}
+
+.pending-state h3 {
+  margin: 15px 0 5px;
+  color: #1e293b;
+}
+
+.pending-state p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.pending-state-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pending-state-icon.success {
+  background: #ecfdf5;
+  color: #16a34a;
+}
+
+.pending-state.error .pending-state-icon {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.pending-retry-button {
+  margin-top: 18px;
+  border: 0;
+  background: #4f46e5;
+  color: white;
+  border-radius: 8px;
+  padding: 9px 15px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pending-loader {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: pendingSpin 0.8s linear infinite;
+}
+
+.refresh-spinning {
+  animation: pendingSpin 0.8s linear infinite;
+}
+
+@keyframes pendingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* MODAL */
+
+.dismiss-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+}
+
+.dismiss-modal {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+.dismiss-modal-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dismiss-modal h2 {
+  margin: 15px 0 5px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.dismiss-modal p {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.dismiss-modal textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+  padding: 11px;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.dismiss-modal textarea:focus {
+  border-color: #6366f1;
+}
+
+.dismiss-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 17px;
+}
+
+.dismiss-modal-actions button {
+  border-radius: 8px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.cancel-dismiss-button {
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+}
+
+.confirm-dismiss-button {
+  border: 0;
+  background: #dc2626;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.confirm-dismiss-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

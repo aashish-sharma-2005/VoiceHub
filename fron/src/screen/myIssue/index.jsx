@@ -14,9 +14,20 @@ import {
   CheckCircle2,
   XCircle,
   ClipboardList,
+  UserRound,
+  CalendarDays,
+  Tag,
+  FileText,
+  Activity,
+  CircleDot,
+  TrendingUp,
+  X,
 } from "lucide-react";
 
-import { getMyIssues } from "../../services/issueService";
+import {
+  getMyIssues,
+  voteIssue,
+} from "../../services/issueService";
 
 import "./myIssue.css";
 
@@ -27,6 +38,8 @@ function MyIssue() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [view, setView] = useState("grid");
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [votingIssueId, setVotingIssueId] = useState(null);
 
   const fetchMyIssues = async () => {
     try {
@@ -56,6 +69,64 @@ function MyIssue() {
     }
   }, [token]);
 
+  const handleVote = async (issueId, vote) => {
+    try {
+      if (votingIssueId) {
+        return;
+      }
+
+      setVotingIssueId(issueId);
+
+      const data = await voteIssue(issueId, vote);
+
+      const updatedIssue = data.issue;
+
+      setIssues((currentIssues) =>
+        currentIssues.map((issue) => {
+          if (issue._id !== issueId) {
+            return issue;
+          }
+
+          return {
+            ...issue,
+            upvotes: updatedIssue.upvotes,
+            downvotes: updatedIssue.downvotes,
+            userVote: updatedIssue.userVote,
+          };
+        })
+      );
+
+      setSelectedIssue((currentIssue) => {
+        if (!currentIssue || currentIssue._id !== issueId) {
+          return currentIssue;
+        }
+
+        return {
+          ...currentIssue,
+          upvotes: updatedIssue.upvotes,
+          downvotes: updatedIssue.downvotes,
+          userVote: updatedIssue.userVote,
+        };
+      });
+    } catch (error) {
+      console.error("Vote issue error:", error);
+
+      alert(error.message || "Unable to update your vote.");
+    } finally {
+      setVotingIssueId(null);
+    }
+  };
+
+  const openIssueModal = (issue) => {
+    setSelectedIssue(issue);
+    document.body.classList.add("modal-open");
+  };
+
+  const closeIssueModal = () => {
+    setSelectedIssue(null);
+    document.body.classList.remove("modal-open");
+  };
+
   const formatTimeAgo = (date) => {
     if (!date) {
       return "Recently";
@@ -64,9 +135,7 @@ function MyIssue() {
     const created = new Date(date);
     const now = new Date();
 
-    const difference = Math.floor(
-      (now - created) / 1000
-    );
+    const difference = Math.floor((now - created) / 1000);
 
     if (difference < 60) {
       return "Just now";
@@ -115,13 +184,6 @@ function MyIssue() {
       return "status-progress";
     }
 
-    if (
-      value.includes("review") ||
-      value.includes("submitted")
-    ) {
-      return "status-reviewing";
-    }
-
     return "status-reviewing";
   };
 
@@ -137,7 +199,7 @@ function MyIssue() {
     }
 
     if (value.includes("progress")) {
-      return <Clock3 size={14} />;
+      return <Activity size={14} />;
     }
 
     return <AlertCircle size={14} />;
@@ -185,19 +247,46 @@ function MyIssue() {
     return 0;
   };
 
+  const totalIssues = issues.length;
+
+  const pendingIssues = issues.filter(
+    (issue) =>
+      !issue.moderationStatus ||
+      issue.moderationStatus === "Pending"
+  ).length;
+
+  const approvedIssues = issues.filter(
+    (issue) => issue.moderationStatus === "Approved"
+  );
+
+  const inProgressIssues = approvedIssues.filter((issue) => {
+    const status = issue.status?.toLowerCase() || "";
+
+    return (
+      status.includes("progress") ||
+      status.includes("working")
+    );
+  }).length;
+
+  const resolvedIssues = approvedIssues.filter((issue) => {
+    const status = issue.status?.toLowerCase() || "";
+
+    return status.includes("resolved");
+  }).length;
+
   return (
     <div className="my-issues-page">
 
-      {/* TOP HEADER */}
+      {/* =====================================================
+          TOP BAR
+      ===================================================== */}
 
       <div className="my-issues-topbar">
 
         <div className="my-issues-breadcrumb">
           <span>Community Voice</span>
           <span className="breadcrumb-arrow">›</span>
-          <strong>My Reported Issues</strong>
-          <span className="breadcrumb-arrow">›</span>
-          <span>Metro Region</span>
+          <strong>My Issues</strong>
         </div>
 
         <div className="my-issues-actions">
@@ -233,48 +322,177 @@ function MyIssue() {
           </button>
 
         </div>
-
       </div>
 
-      {/* PAGE TITLE */}
 
-      <div className="my-issues-heading">
+      {/* =====================================================
+          HERO
+      ===================================================== */}
 
-        <div>
-          <h1>My Reported Issues</h1>
+      <section className="my-issues-hero">
+
+        <div className="hero-copy">
+
+          <div className="page-eyebrow">
+            YOUR COMMUNITY VOICE
+          </div>
+
+          <h1>
+            Your Issues.
+            <span>Your Impact.</span>
+          </h1>
 
           <p>
-            Track and manage complaints logged under your profile.
+            Keep track of every issue you've reported and follow
+            its journey from submission to resolution.
           </p>
+
         </div>
 
-        <button
-          type="button"
-          className="new-issue-button"
-        >
-          <Plus size={17} />
-          New Issue
-        </button>
+        <div className="hero-action">
 
-      </div>
+          <div className="hero-mini-stat">
+            <span>Your reports</span>
+            <strong>{totalIssues}</strong>
+          </div>
 
-      {/* LOADING */}
+          <button
+            type="button"
+            className="new-issue-button"
+          >
+            <Plus size={17} />
+            New Issue
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          STATISTICS
+      ===================================================== */}
+
+      {!loading && !error && (
+        <section className="issue-statistics">
+
+          <div className="stat-card stat-total">
+            <div className="stat-icon">
+              <FileText size={19} />
+            </div>
+
+            <div className="stat-info">
+              <span>Total Reported</span>
+              <strong>{totalIssues}</strong>
+            </div>
+
+            <div className="stat-decoration">
+              <ClipboardList size={50} />
+            </div>
+          </div>
+
+
+          <div className="stat-card stat-pending">
+            <div className="stat-icon">
+              <Clock3 size={19} />
+            </div>
+
+            <div className="stat-info">
+              <span>Under Review</span>
+              <strong>{pendingIssues}</strong>
+            </div>
+
+            <div className="stat-decoration">
+              <CircleDot size={50} />
+            </div>
+          </div>
+
+
+          <div className="stat-card stat-progress">
+            <div className="stat-icon">
+              <TrendingUp size={19} />
+            </div>
+
+            <div className="stat-info">
+              <span>In Progress</span>
+              <strong>{inProgressIssues}</strong>
+            </div>
+
+            <div className="stat-decoration">
+              <Activity size={50} />
+            </div>
+          </div>
+
+
+          <div className="stat-card stat-resolved">
+            <div className="stat-icon">
+              <CheckCircle2 size={19} />
+            </div>
+
+            <div className="stat-info">
+              <span>Resolved</span>
+              <strong>{resolvedIssues}</strong>
+            </div>
+
+            <div className="stat-decoration">
+              <CheckCircle2 size={50} />
+            </div>
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =====================================================
+          SECTION HEADER
+      ===================================================== */}
+
+      {!loading && !error && issues.length > 0 && (
+        <div className="issues-section-header">
+
+          <div>
+            <div className="section-kicker">
+              YOUR SUBMISSIONS
+            </div>
+
+            <h2>Issues you've reported</h2>
+
+            <p>
+              Stay updated on what is happening with your reports.
+            </p>
+          </div>
+
+          <div className="issue-count-label">
+            <span>{totalIssues}</span>
+            {totalIssues === 1 ? " Issue" : " Issues"}
+          </div>
+
+        </div>
+      )}
+
+
+      {/* =====================================================
+          LOADING
+      ===================================================== */}
 
       {loading && (
-        <div className="my-issues-state">
+        <div className="my-issues-state loading-state">
 
           <div className="loading-spinner"></div>
 
-          <h3>Loading your issues...</h3>
+          <h3>Loading your issues</h3>
 
           <p>
-            Please wait while we fetch your reported issues.
+            We're getting your community reports ready.
           </p>
 
         </div>
       )}
 
-      {/* ERROR */}
+
+      {/* =====================================================
+          ERROR
+      ===================================================== */}
 
       {!loading && error && (
         <div className="my-issues-state error-state">
@@ -299,130 +517,111 @@ function MyIssue() {
         </div>
       )}
 
-      {/* EMPTY */}
+
+      {/* =====================================================
+          EMPTY
+      ===================================================== */}
 
       {!loading &&
         !error &&
         issues.length === 0 && (
-          <div className="my-issues-state">
+          <div className="empty-issues">
 
-            <div className="state-icon">
-              <ClipboardList size={30} />
+            <div className="empty-illustration">
+
+              <div className="empty-circle">
+                <ClipboardList size={38} />
+              </div>
+
+              <span className="empty-dot empty-dot-one"></span>
+              <span className="empty-dot empty-dot-two"></span>
+              <span className="empty-dot empty-dot-three"></span>
+
             </div>
 
-            <h3>No issues reported yet</h3>
+            <div className="empty-content">
 
-            <p>
-              You haven't reported any community issues yet.
-            </p>
+              <span className="empty-kicker">
+                START MAKING AN IMPACT
+              </span>
 
-            <button
-              type="button"
-              className="new-issue-button empty-new-button"
-            >
-              <Plus size={16} />
-              Report Your First Issue
-            </button>
+              <h3>
+                Your community needs your voice.
+              </h3>
+
+              <p>
+                Report a problem around you and help make your
+                community cleaner, safer and better for everyone.
+              </p>
+
+              <button
+                type="button"
+                className="empty-new-button"
+              >
+                <Plus size={17} />
+                Report Your First Issue
+              </button>
+
+            </div>
 
           </div>
         )}
 
-      {/* ISSUES */}
+
+      {/* =====================================================
+          ISSUE LIST
+      ===================================================== */}
 
       {!loading &&
         !error &&
         issues.length > 0 && (
-
           <div
             className={`my-issues-list ${
-              view === "compact"
-                ? "compact-view"
-                : ""
+              view === "compact" ? "compact-view" : ""
             }`}
           >
 
-            {issues.map((issue) => (
+            {issues.map((issue) => {
 
-              <article
-                className="my-issue-card"
-                key={issue._id}
-              >
+              const reporter =
+                issue.user?.name ||
+                issue.createdBy?.name ||
+                issue.reportedBy?.name ||
+                "You";
 
-                {/* IMAGE */}
+              return (
+                <article
+                  className="my-issue-card"
+                  key={issue._id}
+                >
 
-                <div className="my-issue-image">
+                  {/* IMAGE */}
 
-                  <img
-                    src={
-                      issue.images &&
-                      issue.images.length > 0
-                        ? issue.images[0].url
-                        : "/images/default-issue.jpeg"
-                    }
-                    alt={issue.title || "Issue"}
-                  />
+                  <div className="my-issue-image">
 
-                  {/* STATUS */}
+                    <img
+                      src={
+                        issue.images &&
+                        issue.images.length > 0 &&
+                        issue.images[0]?.url
+                          ? issue.images[0].url
+                          : "/images/default-issue.jpeg"
+                      }
+                      alt={issue.title || "Issue"}
+                      onError={(event) => {
+                        event.currentTarget.src =
+                          "/images/default-issue.jpeg";
+                      }}
+                    />
 
-                  <div
-                    className={`issue-status-badge ${getStatusClass(
-                      issue.status
-                    )}`}
-                  >
-                    {getStatusIcon(issue.status)}
-                    {issue.status || "Under Review"}
-                  </div>
+                    <div className="image-overlay"></div>
 
-                  {/* CATEGORY */}
 
-                  <div className="issue-category-badge">
-                    {issue.category || "General"}
-                  </div>
+                    {/* MODERATION */}
 
-                </div>
-
-                {/* CONTENT */}
-
-                <div className="my-issue-content">
-
-                  {/* META */}
-
-                  <div className="my-issue-meta">
-
-                    <span>
-                      <Clock3 size={14} />
-                      {formatTimeAgo(issue.createdAt)}
-                    </span>
-
-                    <span className="meta-dot">•</span>
-
-                    <span className="location-text">
-                      <MapPin size={14} />
-                      {issue.location || "Metro Region"}
-                    </span>
-
-                  </div>
-
-                  {/* TITLE */}
-
-                  <h2>
-                    {issue.title || "Untitled Issue"}
-                  </h2>
-
-                  {/* DESCRIPTION */}
-
-                  <p className="my-issue-description">
-                    {issue.description ||
-                      "No description provided for this issue."}
-                  </p>
-
-                  {/* MODERATION */}
-
-                  {issue.moderationStatus &&
-                    issue.moderationStatus !== "Approved" && (
-
+                    {issue.moderationStatus && (
                       <div
-                        className={`my-issue-moderation ${getModerationClass(
+                        className={`image-moderation ${getModerationClass(
                           issue.moderationStatus
                         )}`}
                       >
@@ -432,96 +631,551 @@ function MyIssue() {
 
                         {issue.moderationStatus}
                       </div>
-
                     )}
 
-                  {/* FOOTER */}
 
-                  <div className="my-issue-footer">
+                    {/* STATUS */}
 
-                    <div className="issue-user">
+                    <div
+                      className={`issue-status-badge ${getStatusClass(
+                        issue.status
+                      )}`}
+                    >
+                      {getStatusIcon(issue.status)}
 
-                      <div className="issue-user-avatar">
-                        {issue.user?.name?.charAt(0) ||
-                          "U"}
-                      </div>
+                      {issue.status || "Under Review"}
+                    </div>
 
-                      <span>
-                        {issue.user?.name ||
-                          issue.reportedBy?.name ||
-                          "You"}
-                      </span>
+
+                    {/* CATEGORY */}
+
+                    <div className="issue-category-badge">
+
+                      <Tag size={11} />
+
+                      {issue.category || "General"}
 
                     </div>
 
-                    <div className="issue-card-actions">
 
-                      <span className="issue-action-count">
-                        <ThumbsUpIcon />
-                        {issue.upvotes ?? 0}
-                      </span>
+                    {/* LOCATION */}
 
-                      <span className="issue-action-count">
-                        <MessageCircle size={15} />
-                        {getCommentsCount(issue)}
-                      </span>
+                    <div className="image-location">
 
-                      <button
-                        type="button"
-                        className="icon-action"
-                        title="Save issue"
-                      >
-                        <Bookmark size={16} />
-                      </button>
+                      <MapPin size={12} />
 
-                      <button
-                        type="button"
-                        className="icon-action"
-                        title="Share issue"
-                      >
-                        <Share2 size={16} />
-                      </button>
+                      {issue.location ||
+                        "Location not provided"}
 
                     </div>
 
                   </div>
 
-                  {/* DISMISS REASON */}
 
-                  {issue.moderationStatus ===
-                    "Dismissed" &&
-                    issue.dismissReason && (
+                  {/* CONTENT */}
 
-                      <div className="dismiss-reason">
+                  <div className="my-issue-content">
 
-                        <strong>
-                          Dismissal reason:
-                        </strong>
+                    <div className="issue-card-header">
 
-                        <span>
-                          {issue.dismissReason}
-                        </span>
-
+                      <div className="issue-time">
+                        <Clock3 size={13} />
+                        {formatTimeAgo(issue.createdAt)}
                       </div>
 
-                    )}
+                      <span className="issue-reference">
+                        #{issue._id?.slice(-6)}
+                      </span>
+
+                    </div>
+
+
+                    <h2>
+                      {issue.title || "Untitled Issue"}
+                    </h2>
+
+
+                    <p className="my-issue-description">
+                      {issue.description ||
+                        "No description provided for this issue."}
+                    </p>
+
+
+                    <div className="issue-quick-meta">
+
+                      <span>
+                        <MessageCircle size={13} />
+                        {getCommentsCount(issue)} comments
+                      </span>
+
+                      <span>
+                        <TrendingUp size={13} />
+                        {issue.upvotes ?? 0} votes
+                      </span>
+
+                    </div>
+
+
+                    {/* OPEN MODAL */}
+
+                    <button
+                      type="button"
+                      className="details-button"
+                      onClick={() =>
+                        openIssueModal(issue)
+                      }
+                    >
+                      <span>View Issue Details</span>
+
+                      <span className="details-button-icon">
+                        →
+                      </span>
+                    </button>
+
+                  </div>
+
+                </article>
+              );
+            })}
+
+          </div>
+        )}
+
+
+      {/* =====================================================
+          ISSUE DETAILS MODAL
+      ===================================================== */}
+
+      {selectedIssue && (
+        <div
+          className="issue-modal-backdrop"
+          onMouseDown={(event) => {
+            if (
+              event.target === event.currentTarget
+            ) {
+              closeIssueModal();
+            }
+          }}
+        >
+
+          <div
+            className="issue-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Issue details"
+          >
+
+            {/* MODAL HEADER */}
+
+            <div className="issue-modal-header">
+
+              <div>
+                <span className="modal-eyebrow">
+                  ISSUE DETAILS
+                </span>
+
+                <h2>
+                  {selectedIssue.title ||
+                    "Untitled Issue"}
+                </h2>
+
+                <span className="modal-reference">
+                  Reference #
+                  {selectedIssue._id?.slice(-6)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-button"
+                onClick={closeIssueModal}
+                aria-label="Close"
+              >
+                <X size={19} />
+              </button>
+
+            </div>
+
+
+            {/* MODAL BODY */}
+
+            <div className="issue-modal-body">
+
+              {/* IMAGE */}
+
+              <div className="modal-image-wrapper">
+
+                <img
+                  src={
+                    selectedIssue.images &&
+                    selectedIssue.images.length > 0 &&
+                    selectedIssue.images[0]?.url
+                      ? selectedIssue.images[0].url
+                      : "/images/default-issue.jpeg"
+                  }
+                  alt={
+                    selectedIssue.title ||
+                    "Issue"
+                  }
+                  onError={(event) => {
+                    event.currentTarget.src =
+                      "/images/default-issue.jpeg";
+                  }}
+                />
+
+                <div className="modal-image-gradient"></div>
+
+                <div
+                  className={`modal-status ${getStatusClass(
+                    selectedIssue.status
+                  )}`}
+                >
+                  {getStatusIcon(
+                    selectedIssue.status
+                  )}
+
+                  {selectedIssue.status ||
+                    "Under Review"}
+                </div>
+
+              </div>
+
+
+              {/* MODERATION */}
+
+              {selectedIssue.moderationStatus && (
+                <div
+                  className={`modal-moderation ${getModerationClass(
+                    selectedIssue.moderationStatus
+                  )}`}
+                >
+
+                  {getModerationIcon(
+                    selectedIssue.moderationStatus
+                  )}
+
+                  <span>
+                    Moderation:
+                    {" "}
+                    <strong>
+                      {selectedIssue.moderationStatus}
+                    </strong>
+                  </span>
+
+                </div>
+              )}
+
+
+              {/* DESCRIPTION */}
+
+              <div className="modal-description-section">
+
+                <div className="modal-section-title">
+                  <FileText size={15} />
+                  Description
+                </div>
+
+                <p>
+                  {selectedIssue.description ||
+                    "No description provided for this issue."}
+                </p>
+
+              </div>
+
+
+              {/* DETAILS */}
+
+              <div className="modal-detail-grid">
+
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <Tag size={17} />
+                  </div>
+
+                  <div>
+                    <span>Category</span>
+                    <strong>
+                      {selectedIssue.category ||
+                        "General"}
+                    </strong>
+                  </div>
 
                 </div>
 
-              </article>
 
-            ))}
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <MapPin size={17} />
+                  </div>
+
+                  <div>
+                    <span>Location</span>
+                    <strong>
+                      {selectedIssue.location ||
+                        "Location not provided"}
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <CalendarDays size={17} />
+                  </div>
+
+                  <div>
+                    <span>Reported On</span>
+                    <strong>
+                      {selectedIssue.createdAt
+                        ? new Date(
+                            selectedIssue.createdAt
+                          ).toLocaleDateString(
+                            "en-IN",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )
+                        : "Recently"}
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <Clock3 size={17} />
+                  </div>
+
+                  <div>
+                    <span>Submitted</span>
+                    <strong>
+                      {formatTimeAgo(
+                        selectedIssue.createdAt
+                      )}
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <UserRound size={17} />
+                  </div>
+
+                  <div>
+                    <span>Reported By</span>
+                    <strong>
+                      {selectedIssue.user?.name ||
+                        selectedIssue.createdBy?.name ||
+                        selectedIssue.reportedBy?.name ||
+                        "You"}
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <div className="modal-detail-card">
+
+                  <div className="modal-detail-icon">
+                    <MessageCircle size={17} />
+                  </div>
+
+                  <div>
+                    <span>Comments</span>
+                    <strong>
+                      {getCommentsCount(
+                        selectedIssue
+                      )}
+                    </strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              {/* DISMISS REASON */}
+
+              {selectedIssue.moderationStatus ===
+                "Dismissed" &&
+                selectedIssue.dismissReason && (
+                  <div className="modal-dismiss-box">
+
+                    <div className="modal-dismiss-title">
+                      <XCircle size={16} />
+                      Dismissal Reason
+                    </div>
+
+                    <p>
+                      {selectedIssue.dismissReason}
+                    </p>
+
+                  </div>
+                )}
+
+
+              {/* VOTE / ENGAGEMENT */}
+
+              <div className="modal-engagement">
+
+                <div className="engagement-heading">
+                  Community response
+                </div>
+
+                <div className="engagement-actions">
+
+                  <button
+                    type="button"
+                    className={`modal-vote-button ${
+                      selectedIssue.userVote === "up"
+                        ? "vote-active-up"
+                        : ""
+                    }`}
+                    disabled={
+                      selectedIssue.moderationStatus !==
+                        "Approved" ||
+                      votingIssueId ===
+                        selectedIssue._id
+                    }
+                    onClick={() =>
+                      handleVote(
+                        selectedIssue._id,
+                        "up"
+                      )
+                    }
+                  >
+                    <span>↑</span>
+                    Upvote
+                    <strong>
+                      {selectedIssue.upvotes ?? 0}
+                    </strong>
+                  </button>
+
+
+                  <button
+                    type="button"
+                    className={`modal-vote-button ${
+                      selectedIssue.userVote === "down"
+                        ? "vote-active-down"
+                        : ""
+                    }`}
+                    disabled={
+                      selectedIssue.moderationStatus !==
+                        "Approved" ||
+                      votingIssueId ===
+                        selectedIssue._id
+                    }
+                    onClick={() =>
+                      handleVote(
+                        selectedIssue._id,
+                        "down"
+                      )
+                    }
+                  >
+                    <span>↓</span>
+                    Downvote
+                    <strong>
+                      {selectedIssue.downvotes ?? 0}
+                    </strong>
+                  </button>
+
+
+                  <div className="modal-comment-count">
+
+                    <MessageCircle size={17} />
+
+                    <div>
+                      <span>Comments</span>
+                      <strong>
+                        {getCommentsCount(
+                          selectedIssue
+                        )}
+                      </strong>
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {selectedIssue.moderationStatus !==
+                  "Approved" && (
+                  <div className="modal-vote-info">
+                    <AlertCircle size={14} />
+                    Voting will be available after
+                    this issue is approved.
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+
+
+            {/* MODAL FOOTER */}
+
+            <div className="issue-modal-footer">
+
+              <div className="modal-footer-reference">
+                <span>Submitted by</span>
+                <strong>
+                  {selectedIssue.user?.name ||
+                    selectedIssue.createdBy?.name ||
+                    selectedIssue.reportedBy?.name ||
+                    "You"}
+                </strong>
+              </div>
+
+              <div className="modal-footer-actions">
+
+                <button
+                  type="button"
+                  className="modal-icon-action"
+                  title="Save issue"
+                >
+                  <Bookmark size={17} />
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  className="modal-icon-action"
+                  title="Share issue"
+                >
+                  <Share2 size={17} />
+                  Share
+                </button>
+
+                <button
+                  type="button"
+                  className="modal-close-text"
+                  onClick={closeIssueModal}
+                >
+                  Close
+                </button>
+
+              </div>
+
+            </div>
 
           </div>
 
-        )}
+        </div>
+      )}
 
     </div>
   );
-}
-
-function ThumbsUpIcon() {
-  return <span className="thumb-up-icon">↑</span>;
 }
 
 export default MyIssue;

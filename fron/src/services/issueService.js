@@ -66,3 +66,160 @@ export const getMyIssues = async () => {
 
     return data;
 };
+
+/*
+ * Vote on an issue
+ *
+ * vote:
+ * "up"   = upvote
+ * "down" = downvote
+ *
+ * Clicking the same vote again removes it.
+ */
+export const voteIssue = async (
+    issueId,
+    vote
+) => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error(
+            "Authentication required. Please login again."
+        );
+    }
+
+    if (!["up", "down"].includes(vote)) {
+        throw new Error(
+            "Invalid vote type."
+        );
+    }
+
+    const response = await fetch(
+        `${API_URL}/${issueId}/vote`,
+        {
+            method: "PATCH",
+
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+
+            body: JSON.stringify({
+                vote,
+            }),
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+                "Failed to update vote"
+        );
+    }
+
+    return data;
+};
+export const getManageIssues = async () => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error(
+            "Authentication required. Please login again."
+        );
+    }
+
+    const response = await fetch(
+        `${API_URL}/manage`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+                "Failed to fetch issues"
+        );
+    }
+
+    return data;
+};
+
+
+export const approveIssue = async (issueId) => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error(
+            "Authentication required. Please login again."
+        );
+    }
+
+    const response = await fetch(
+        `${API_URL}/${issueId}/approve`,
+        {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+                "Failed to approve issue"
+        );
+    }
+
+    return data;
+};
+
+
+export const dismissIssue = async (
+    issueId,
+    reason
+) => {
+    const token = getToken();
+
+    if (!token) {
+        throw new Error(
+            "Authentication required. Please login again."
+        );
+    }
+
+    const response = await fetch(
+        `${API_URL}/${issueId}/dismiss`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type":
+                    "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                reason,
+            }),
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ||
+                "Failed to dismiss issue"
+        );
+    }
+
+    return data;
+};
