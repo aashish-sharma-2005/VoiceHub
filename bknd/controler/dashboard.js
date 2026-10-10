@@ -1,155 +1,179 @@
+
 const Issue = require("../models/issue");
+const User = require("../models/user");
 
+/*
+ * PUBLIC COMMUNITY DASHBOARD
+ * Keeps the existing public dashboard response.
+ */
 const getDashboardData = async (req, res) => {
-  try {
-    // Only approved issues are public
-    const publicFilter = {
-      moderationStatus: "Approved",
-    };
+    try {
+        const publicFilter = {
+            moderationStatus: "Approved",
+        };
 
-    // =========================
-    // Total Public Issues
-    // =========================
+        const totalIssues = await Issue.countDocuments(publicFilter);
 
-    const totalIssues = await Issue.countDocuments(publicFilter);
+        const resolved = await Issue.countDocuments({
+            ...publicFilter,
+            status: "Resolved",
+        });
 
-    // =========================
-    // Status Counts
-    // =========================
+        const inProgress = await Issue.countDocuments({
+            ...publicFilter,
+            status: "In Progress",
+        });
 
-    const resolved = await Issue.countDocuments({
-      ...publicFilter,
-      status: "Resolved",
-    });
+        const submitted = await Issue.countDocuments({
+            ...publicFilter,
+            status: "Submitted",
+        });
 
-    const inProgress = await Issue.countDocuments({
-      ...publicFilter,
-      status: "In Progress",
-    });
+        const underReview = await Issue.countDocuments({
+            ...publicFilter,
+            status: "Under Review",
+        });
 
-    const submitted = await Issue.countDocuments({
-      ...publicFilter,
-      status: "Submitted",
-    });
+        const categoryData = await Issue.aggregate([
+            { $match: publicFilter },
+            {
+                $group: {
+                    _id: "$category",
+                    count: { $sum: 1 },
+                },
+            },
+            { $sort: { count: -1 } },
+        ]);
 
-    const underReview = await Issue.countDocuments({
-      ...publicFilter,
-      status: "Under Review",
-    });
+        const categories = categoryData.map((item) => ({
+            name: item._id,
+            count: item.count,
+            percentage:
+                totalIssues > 0
+                    ? Math.round((item.count / totalIssues) * 100)
+                    : 0,
+        }));
 
-    // =========================
-    // Issue Distribution
-    // =========================
+        const recentIssues = await Issue.find(publicFilter)
+            .sort({ createdAt: -1 })
+            .limit(3)
+            .select("title category status createdAt");
 
-    const categoryData = await Issue.aggregate([
-      {
-        $match: publicFilter,
-      },
-      {
-        $group: {
-          _id: "$category",
-          count: {
-            $sum: 1,
-          },
-        },
-      },
-      {
-        $sort: {
-          count: -1,
-        },
-      },
-    ]);
+        const recentActivity = recentIssues.map((issue) => ({
+            title: issue.title,
+            category: issue.category,
+            status: issue.status,
+            time: issue.createdAt,
+        }));
 
-    const categories = categoryData.map((item) => ({
-      name: item._id,
-      count: item.count,
-      percentage:
-        totalIssues > 0
-          ? Math.round((item.count / totalIssues) * 100)
-          : 0,
-    }));
+        const trendingIssues = await Issue.find(publicFilter)
+            .sort({ upvotes: -1 })
+            .limit(3)
+            .select("title location upvotes status");
 
-    // =========================
-    // Recent Activity
-    // =========================
+        const trending = trendingIssues.map((issue) => ({
+            title: issue.title,
+            location: issue.location,
+            votes: issue.upvotes,
+            comments: 0,
+            status: issue.status,
+        }));
 
-    const recentIssues = await Issue.find(publicFilter)
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .select("title category status createdAt");
+        const resolvedPercentage =
+            totalIssues > 0
+                ? Math.round((resolved / totalIssues) * 100)
+                : 0;
 
-    const recentActivity = recentIssues.map((issue) => ({
-      title: issue.title,
-      category: issue.category,
-      status: issue.status,
-      time: issue.createdAt,
-    }));
+        return res.status(200).json({
+            success: true,
 
-    // =========================
-    // Trending Issues
-    // =========================
+            stats: {
+                totalIssues,
+                resolved,
+                inProgress,
+                pending: submitted,
+            },
 
-    const trendingIssues = await Issue.find(publicFilter)
-      .sort({ upvotes: -1 })
-      .limit(3)
-      .select("title location upvotes status");
+            categories,
+            recentActivity,
+            trendingIssues: trending,
 
-    const trending = trendingIssues.map((issue) => ({
-      title: issue.title,
-      location: issue.location,
-      votes: issue.upvotes,
-      comments: 0,
-      status: issue.status,
-    }));
+            civicProgress: {
+                submitted,
+                underReview,
+                inProgress,
+                resolved,
+                resolvedPercentage,
+            },
+        });
+    } catch (error) {
+        console.error("Public dashboard error:", error);
 
-    // =========================
-    // Resolved Percentage
-    // =========================
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load dashboard data",
+        });
+    }
+};
 
-    const resolvedPercentage =
-      totalIssues > 0
-        ? Math.round((resolved / totalIssues) * 100)
-        : 0;
+/*
+ * ADMIN DASHBOARD
+ * Includes all issues, regardless of moderation status.
+ */
+const getAdminDashboardData = async (req, res) => {
+    try {
+        const [
+            totalUsers,
+            totalIssues,
+            pendingReviews,
+            resolvedIssues,
+            recentIssues,
+        ] = await Promise.all([
+            User.countDocuments({}),
 
-    // =========================
-    // Response
-    // =========================
+            Issue.countDocuments({}),
 
-    res.status(200).json({
-      success: true,
+            Issue.countDocuments({
+                moderationStatus: "Pending",
+            }),
 
-      stats: {
-        totalIssues,
-        resolved,
-        inProgress,
-        pending: submitted,
-      },
+            Issue.countDocuments({
+                moderationStatus: "Approved",
+                status: "Resolved",
+            }),
 
-      categories,
+            Issue.find({})
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .populate("createdBy", "name email")
+                .select(
+                    "title category location moderationStatus status createdAt createdBy"
+                ),
+        ]);
 
-      recentActivity,
+        return res.status(200).json({
+            success: true,
 
-      trendingIssues: trending,
+            stats: {
+                totalUsers,
+                totalIssues,
+                pendingReviews,
+                resolvedIssues,
+            },
 
-      civicProgress: {
-        submitted,
-        underReview,
-        inProgress,
-        resolved,
-        resolvedPercentage,
-      },
-    });
-  } catch (error) {
-    console.error("Dashboard error:", error);
+            recentIssues,
+        });
+    } catch (error) {
+        console.error("Admin dashboard error:", error);
 
-    res.status(500).json({
-      success: false,
-      message: "Failed to load dashboard data",
-      error: error.message,
-    });
-  }
+        return res.status(500).json({
+            success: false,
+            message: "Failed to load admin dashboard data",
+        });
+    }
 };
 
 module.exports = {
-  getDashboardData,
+    getDashboardData,
+    getAdminDashboardData,
 };

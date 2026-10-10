@@ -1,0 +1,582 @@
+.admin-people-page {
+    width: 100%;
+    min-height: 100%;
+    padding: 30px;
+    color: #172033;
+    background: #f5f7fb;
+}
+
+.admin-people-page * {
+    box-sizing: border-box;
+}
+
+.admin-people-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 26px;
+}
+
+.admin-people-eyebrow {
+    display: block;
+    margin-bottom: 9px;
+    color: #71809a;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+
+.admin-people-heading h1 {
+    margin: 0;
+    color: #172033;
+    font-size: clamp(25px, 3vw, 32px);
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.admin-people-heading p {
+    margin: 9px 0 0;
+    color: #7b879a;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.admin-people-refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 15px;
+    border: 1px solid #dce3ee;
+    border-radius: 10px;
+    background: #fff;
+    color: #39465b;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.admin-people-refresh:hover:not(:disabled) {
+    border-color: #a9c4ff;
+    color: #245de6;
+}
+
+.admin-people-refresh:disabled,
+.admin-people-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.admin-people-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 23px;
+}
+
+.admin-people-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 0;
+    padding: 21px;
+    border: 1px solid #e9edf4;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(24 39 75 / 3%);
+}
+
+.admin-people-stat-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    border-radius: 13px;
+}
+
+.admin-people-stat-icon.blue {
+    color: #3269e9;
+    background: #edf3ff;
+}
+
+.admin-people-stat-icon.green {
+    color: #14966b;
+    background: #e9f8f1;
+}
+
+.admin-people-stat-icon.red {
+    color: #d94a57;
+    background: #fff0f1;
+}
+
+.admin-people-stat-card div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-people-stat-card span {
+    color: #7c8799;
+    font-size: 12px;
+    font-weight: 550;
+}
+
+.admin-people-stat-card strong {
+    color: #172033;
+    font-size: 26px;
+    font-weight: 750;
+    line-height: 1.15;
+}
+
+.admin-people-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding: 17px;
+    border: 1px solid #e9edf4;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.admin-people-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min(100%, 510px);
+    min-height: 43px;
+    padding: 0 10px 0 13px;
+    border: 1px solid #e1e6ef;
+    border-radius: 10px;
+    color: #8b96a8;
+    background: #fbfcfe;
+}
+
+.admin-people-search:focus-within {
+    border-color: #8baeff;
+    box-shadow: 0 0 0 3px rgb(55 105 232 / 8%);
+}
+
+.admin-people-search input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #273247;
+    font-size: 13px;
+}
+
+.admin-people-search input::placeholder {
+    color: #a1aabb;
+}
+
+.admin-people-search button {
+    min-height: 30px;
+    padding: 0 13px;
+    border: 0;
+    border-radius: 7px;
+    background: #3269e9;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-people-search button:hover {
+    background: #2456cb;
+}
+
+.admin-people-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 160px;
+}
+
+.admin-people-filter span {
+    color: #6f7b90;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-people-filter select {
+    width: 100%;
+    min-height: 43px;
+    padding: 0 12px;
+    border: 1px solid #e1e6ef;
+    border-radius: 9px;
+    outline: none;
+    background: #fbfcfe;
+    color: #344158;
+    font-size: 13px;
+}
+
+.admin-people-message {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 17px;
+    padding: 12px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.admin-people-message.success {
+    border-color: #c7eedc;
+    background: #effbf5;
+    color: #167a52;
+}
+
+.admin-people-message.error {
+    border-color: #ffd5d9;
+    background: #fff4f5;
+    color: #b83243;
+}
+
+.admin-people-message button {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.admin-people-table-card {
+    overflow: hidden;
+    border: 1px solid #e7ebf3;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(24 39 75 / 3%);
+}
+
+.admin-people-table-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 22px 23px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.admin-people-table-heading h2 {
+    margin: 0;
+    color: #202c40;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.admin-people-table-heading p {
+    margin: 5px 0 0;
+    color: #8490a2;
+    font-size: 12px;
+}
+
+.admin-people-role-tag {
+    padding: 7px 10px;
+    border: 1px solid #e1eaff;
+    border-radius: 8px;
+    background: #f2f6ff;
+    color: #3264d8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.admin-people-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-people-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-people-table thead {
+    background: #f9fafc;
+}
+
+.admin-people-table th {
+    padding: 13px 18px;
+    color: #8490a2;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-people-table td {
+    padding: 16px 18px;
+    border-top: 1px solid #eff2f7;
+    color: #47546a;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.admin-people-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.admin-people-table tbody tr:hover {
+    background: #fbfcff;
+}
+
+.admin-people-account {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 220px;
+}
+
+.admin-people-avatar {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    place-items: center;
+    border: 1px solid #dce7ff;
+    border-radius: 12px;
+    background: #edf3ff;
+    color: #3269e9;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.admin-people-account-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.admin-people-account-details strong {
+    color: #253149;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-people-account-details span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #8994a5;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.admin-people-role,
+.admin-people-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 750;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.admin-people-role.user {
+    background: #eef3ff;
+    color: #4269ce;
+}
+
+.admin-people-role.moderator {
+    background: #f0eaff;
+    color: #7650c9;
+}
+
+.admin-people-status.active {
+    background: #eaf8f0;
+    color: #19865c;
+}
+
+.admin-people-status.blocked {
+    background: #fff0f1;
+    color: #d14352;
+}
+
+.admin-people-status > span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.admin-people-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #758196;
+    white-space: nowrap;
+}
+
+.admin-people-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 250px;
+}
+
+.admin-people-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 30px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.admin-people-action.block {
+    border-color: #ffdfe2;
+    background: #fff5f5;
+    color: #c74250;
+}
+
+.admin-people-action.unblock {
+    border-color: #cceede;
+    background: #effbf5;
+    color: #168457;
+}
+
+.admin-people-action.role-change {
+    border-color: #dce7ff;
+    background: #f1f5ff;
+    color: #3464d5;
+}
+
+.admin-people-action.delete {
+    border-color: #e4e7ed;
+    background: #fff;
+    color: #657188;
+}
+
+.admin-people-action:hover:not(:disabled) {
+    filter: brightness(0.96);
+    transform: translateY(-1px);
+}
+
+.admin-people-empty {
+    height: 180px;
+    text-align: center !important;
+    color: #8994a5 !important;
+}
+
+.admin-people-empty > svg,
+.admin-people-empty > span,
+.admin-people-empty > strong {
+    display: block;
+    margin: 8px auto;
+}
+
+.admin-people-empty > strong {
+    color: #39465b;
+    font-size: 13px;
+}
+
+.admin-people-spinner {
+    animation: admin-people-spin 0.8s linear infinite;
+}
+
+@keyframes admin-people-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.admin-people-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px 22px;
+    border-top: 1px solid #edf0f5;
+    color: #8b96a8;
+    font-size: 10px;
+}
+
+.admin-people-table-footer span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+@media (max-width: 900px) {
+    .admin-people-page {
+        padding: 22px;
+    }
+
+    .admin-people-stats {
+        gap: 12px;
+    }
+
+    .admin-people-stat-card {
+        padding: 16px;
+    }
+
+    .admin-people-stat-icon {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+    }
+}
+
+@media (max-width: 650px) {
+    .admin-people-page {
+        padding: 16px;
+    }
+
+    .admin-people-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-people-refresh {
+        align-self: flex-start;
+    }
+
+    .admin-people-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-people-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-people-search {
+        width: 100%;
+    }
+
+    .admin-people-filter {
+        width: 100%;
+    }
+
+    .admin-people-table-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px;
+    }
+
+    .admin-people-table-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

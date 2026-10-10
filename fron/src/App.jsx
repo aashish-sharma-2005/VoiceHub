@@ -17,235 +17,234 @@ import IssueManagement from "./screen/IssueManagement/index";
 import PendingIssues from "./screen/pendingIssue/index";
 import ApprovedIssues from "./screen/approvedIssue/index";
 import DismissedIssues from "./screen/dismissedIssue/index";
+import AdminDashboard from "./screen/adminDashboard/index";
 
 import RoleRoute from "./routes/RoleRoute";
+import AdminUsers from "./screen/adminUsers/index";
+import AdminModerators from "./screen/adminModerators/index";
 
-function AdminDashboard() {
-return (
-<div style={{ padding: "30px" }}> <h1>Admin Dashboard</h1> <p>Welcome to the VoiceHub Admin Panel.</p> </div>
-);
-}
 
 function ModeratorDashboard() {
-return (
-<div style={{ padding: "30px" }}> <h1>Moderator Dashboard</h1> <p>Welcome to the VoiceHub Moderator Panel.</p> </div>
-);
+    return (
+        <div style={{ padding: "30px" }}> <h1>Moderator Dashboard</h1> <p>Welcome to the VoiceHub Moderator Panel.</p> </div>
+    );
 }
 
 function App() {
-return ( <BrowserRouter> <Routes>
+    return (<BrowserRouter> <Routes>
 
-```
-            {/* =========================
+        {/* =========================
                 PUBLIC ROUTES
             ========================== */}
 
-            <Route
-                path="/login"
-                element={<Login />}
-            />
+        <Route
+            path="/login"
+            element={<Login />}
+        />
 
-            <Route
-                path="/signup"
-                element={<Signup />}
-            />
+        <Route
+            path="/signup"
+            element={<Signup />}
+        />
 
 
-            {/* =========================
+        {/* =========================
                 USER ROUTES
             ========================== */}
 
-            <Route
-                element={
-                    <RoleRoute allowedRoles={["user"]} />
-                }
-            >
-                <Route element={<MainLayout />}>
+        <Route
+            element={
+                <RoleRoute allowedRoles={["user"]} />
+            }
+        >
+            <Route element={<MainLayout />}>
 
-                    <Route
-                        path="/"
-                        element={<Home />}
-                    />
+                <Route
+                    path="/"
+                    element={<Home />}
+                />
 
-                    <Route
-                        path="/create-issue"
-                        element={<CreateIssue />}
-                    />
+                <Route
+                    path="/create-issue"
+                    element={<CreateIssue />}
+                />
 
-                    <Route
-                        path="/my-issues"
-                        element={<MyIssue />}
-                    />
+                <Route
+                    path="/my-issues"
+                    element={<MyIssue />}
+                />
 
-                </Route>
             </Route>
+        </Route>
 
 
-            {/* =========================
+        {/* =========================
                 COMMON ROUTES
                 USER + MODERATOR + ADMIN
             ========================== */}
 
-            <Route
-                element={
-                    <RoleRoute
-                        allowedRoles={[
-                            "user",
-                            "moderator",
-                            "admin",
-                        ]}
-                    />
-                }
-            >
-                <Route element={<MainLayout />}>
+        <Route
+            element={
+                <RoleRoute
+                    allowedRoles={[
+                        "user",
+                        "moderator",
+                        "admin",
+                    ]}
+                />
+            }
+        >
+            <Route element={<MainLayout />}>
 
-                    <Route
-                        path="/explore"
-                        element={<Explore />}
-                    />
+                <Route
+                    path="/explore"
+                    element={<Explore />}
+                />
 
-                    <Route
-                        path="/notifications"
-                        element={<Notification />}
-                    />
+                <Route
+                    path="/notifications"
+                    element={<Notification />}
+                />
 
-                    <Route
-                        path="/profile"
-                        element={<Profile />}
-                    />
+                <Route
+                    path="/profile"
+                    element={<Profile />}
+                />
 
-                </Route>
             </Route>
+        </Route>
 
 
-            {/* =========================
+        {/* =========================
                 MODERATOR ROUTES
             ========================== */}
 
-            <Route
-                element={
-                    <RoleRoute
-                        allowedRoles={["moderator"]}
-                    />
-                }
-            >
-                <Route element={<MainLayout />}>
+        <Route
+            element={
+                <RoleRoute
+                    allowedRoles={["moderator"]}
+                />
+            }
+        >
+            <Route element={<MainLayout />}>
 
-                    {/* Moderator Dashboard */}
+                {/* Moderator Dashboard */}
 
-                    <Route
-                        path="/moderator"
-                        element={<ModeratorDashboard />}
-                    />
+                <Route
+                    path="/moderator"
+                    element={<ModeratorDashboard />}
+                />
 
-                    {/* Pending Issues */}
+                {/* Pending Issues */}
 
-                    <Route
-                        path="/moderator/pending"
-                        element={<PendingIssues />}
-                    />
+                <Route
+                    path="/moderator/pending"
+                    element={<PendingIssues />}
+                />
 
-                    {/* All Issues */}
+                {/* All Issues */}
 
-                    <Route
-                        path="/moderator/issues"
-                        element={<IssueManagement />}
-                    />
+                <Route
+                    path="/moderator/issues"
+                    element={<IssueManagement />}
+                />
 
-                    {/* Approved Issues */}
+                {/* Approved Issues */}
 
-                    <Route
-                        path="/moderator/approved"
-                        element={<ApprovedIssues />}
-                    />
+                <Route
+                    path="/moderator/approved"
+                    element={<ApprovedIssues />}
+                />
 
-                    {/* Dismissed Issues */}
+                {/* Dismissed Issues */}
 
-                    <Route
-                        path="/moderator/dismissed"
-                        element={<DismissedIssues />}
-                    />
+                <Route
+                    path="/moderator/dismissed"
+                    element={<DismissedIssues />}
+                />
 
-                </Route>
             </Route>
+        </Route>
 
 
-            {/* =========================
+        {/* =========================
                 ADMIN ROUTES
             ========================== */}
 
-            <Route
-                element={
-                    <RoleRoute
-                        allowedRoles={["admin"]}
-                    />
-                }
-            >
-                <Route element={<MainLayout />}>
+        <Route
+            element={
+                <RoleRoute
+                    allowedRoles={["admin"]}
+                />
+            }
+        >
+            <Route element={<MainLayout />}>
 
-                    {/* Admin Dashboard */}
+                {/* Admin Dashboard */}
 
-                    <Route
-                        path="/admin"
-                        element={<AdminDashboard />}
-                    />
+                <Route
+                    path="/admin"
+                    element={<AdminDashboard />}
+                />
 
-                    {/* Pending Issues */}
+                {/* Pending Issues */}
 
-                    <Route
-                        path="/admin/pending"
-                        element={<PendingIssues />}
-                    />
+                <Route
+                    path="/admin/pending"
+                    element={<PendingIssues />}
+                />
 
-                    {/* Admin Issue Management */}
+                {/* Admin Issue Management */}
 
-                    <Route
-                        path="/admin/issues"
-                        element={<IssueManagement />}
-                    />
+                <Route
+                    path="/admin/issues"
+                    element={<IssueManagement />}
+                />
+                <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/admin/moderators" element={<AdminModerators />} />
 
-                </Route>
             </Route>
+        </Route>
 
 
-            {/* =========================
+        {/* =========================
                 UNAUTHORIZED
             ========================== */}
 
-            <Route
-                path="/unauthorized"
-                element={
-                    <div
-                        style={{
-                            padding: "40px",
-                            textAlign: "center",
-                        }}
-                    >
-                        <h1>403</h1>
+        <Route
+            path="/unauthorized"
+            element={
+                <div
+                    style={{
+                        padding: "40px",
+                        textAlign: "center",
+                    }}
+                >
+                    <h1>403</h1>
 
-                        <h2>Access Denied</h2>
+                    <h2>Access Denied</h2>
 
-                        <p>
-                            You do not have permission to
-                            access this page.
-                        </p>
-                    </div>
-                }
-            />
+                    <p>
+                        You do not have permission to
+                        access this page.
+                    </p>
+                </div>
+            }
+        />
 
 
-            {/* =========================
+        {/* =========================
                 404
             ========================== */}
 
-            <Route
-                path="*"
-                element={<NotFound />}
-            />
+        <Route
+            path="*"
+            element={<NotFound />}
+        />
 
-        </Routes>
+    </Routes>
     </BrowserRouter>
-);
+    );
 
 }
 

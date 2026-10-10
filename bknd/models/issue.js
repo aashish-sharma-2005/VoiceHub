@@ -52,7 +52,7 @@ const issueSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -107,12 +107,30 @@ const issueSchema = new mongoose.Schema(
     upvotes: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     downvotes: {
       type: Number,
       default: 0,
+      min: 0,
     },
+
+    // Users who have upvoted
+    upvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    // Users who have downvoted
+    downvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

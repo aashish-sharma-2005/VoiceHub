@@ -1,331 +1,712 @@
-import { useEffect, useState } from "react";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Search,
-  RefreshCw,
-  MapPin,
-  UserRound,
+  AlertCircle,
+  ArrowDown,
+  ArrowUp,
   CalendarDays,
-  ThumbsUp,
-  ThumbsDown,
-  MessageCircle,
-  Check,
-  X,
-  Eye,
+  CheckCircle2,
   Clock3,
+  Eye,
+  FileText,
+  Image as ImageIcon,
+  MapPin,
+  MessageSquareText,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+  Users,
+  X,
 } from "lucide-react";
 
+import {
+  getManageIssues,
+  approveIssue,
+  dismissIssue,
+} from "../../services/issueService";
+
 import "./IssueManagement.css";
+
+const FILTERS = ["All", "Pending", "Approved", "Dismissed"];
+
+const getModerationStatus = (issue) => {
+  const status = issue?.moderationStatus;
+
+  if (!status) return "Pending";
+  if (status.toLowerCase() === "pending") return "Pending";
+  if (status.toLowerCase() === "approved") return "Approved";
+  if (status.toLowerCase() === "dismissed") return "Dismissed";
+
+  return status;
+};
+
+const formatDate = (date) => {
+  if (!date) return "Date unavailable";
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Date unavailable";
+  }
+
+  return parsedDate.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const getReporterName = (issue) => {
+  const reporter = issue?.createdBy;
+
+  if (reporter && typeof reporter === "object") {
+    return reporter.name || reporter.username || reporter.email || "Community member";
+  }
+
+  return "Community member";
+};
+
+const getIssueImage = (issue) => {
+  if (Array.isArray(issue?.images) && issue.images.length > 0) {
+    const firstImage = issue.images[0];
+    return typeof firstImage === "string" ? firstImage : firstImage?.url;
+  }
+
+  if (Array.isArray(issue?.photos) && issue.photos.length > 0) {
+    const firstPhoto = issue.photos[0];
+    return typeof firstPhoto === "string" ? firstPhoto : firstPhoto?.url;
+  }
+
+  return null;
+};
+
+const getId = (issue) => issue?._id || issue?.id;
 
 function IssueManagement() {
   const [issues, setIssues] = useState([]);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [actionId, setActionId] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
-  // =========================
-  // Fetch Issues
-  // =========================
-
-  const fetchIssues = async () => {
-    try {
+  const fetchIssues = useCallback(async (showRefresh = false) => {
+    if (showRefresh) {
+      setRefreshing(true);
+    } else {
       setLoading(true);
+    }
 
-      const response = await fetch(
-        "http://localhost:3000/api/issues/manage",
-        {
-          credentials: "include",
-        }
-      );
+    setError("");
 
-      const data = await response.json();
+    try {
+      const data = await getManageIssues();
 
-      if (data.success) {
-        setIssues(data.issues);
+      if (data?.success === false) {
+        throw new Error(data.message || "Unable to load issues.");
       }
-    } catch (error) {
-      console.error("Failed to fetch issues:", error);
+
+      setIssues(Array.isArray(data?.issues) ? data.issues : []);
+    } catch (err) {
+      setError(err.message || "Failed to load issues. Please try again.");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchIssues();
-  }, []);
+  }, [fetchIssues]);
 
-  // =========================
-  // Search
-  // =========================
+  const counts = useMemo(() => {
+    return issues.reduce(
+      (result, issue) => {
+        result.total += 1;
 
-  const filteredIssues = issues.filter((issue) => {
-    const searchText = search.toLowerCase();
+        const status = getModerationStatus(issue);
 
-    return (
-      issue.title?.toLowerCase().includes(searchText) ||
-      issue.category?.toLowerCase().includes(searchText) ||
-      issue.location?.toLowerCase().includes(searchText) ||
-      issue.createdBy?.name?.toLowerCase().includes(searchText)
+        if (status === "Pending") result.pending += 1;
+        if (status === "Approved") result.approved += 1;
+        if (status === "Dismissed") result.dismissed += 1;
+
+        return result;
+      },
+      { total: 0, pending: 0, approved: 0, dismissed: 0 }
     );
-  });
+  }, [issues]);
 
-  // =========================
-  // Date Format
-  // =========================
+  const filteredIssues = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-  const formatDate = (date) => {
-    if (!date) return "Unknown date";
+    return issues.filter((issue) => {
+      const status = getModerationStatus(issue);
 
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+      const matchesFilter = filter === "All" || status === filter;
+
+      const searchableText = [
+        issue?.title,
+        issue?.description,
+        issue?.category,
+        issue?.location,
+        getReporterName(issue),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return matchesFilter && (!query || searchableText.includes(query));
     });
+  }, [issues, search, filter]);
+
+  const handleApprove = async (issue) => {
+    const issueId = getId(issue);
+    if (!issueId) {
+      setError("This issue does not have a valid ID.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Approve "${issue.title || "this issue"}"? It can then appear in the public Explore page.`
+    );
+
+    if (!confirmed) return;
+
+    setActionId(issueId);
+    setError("");
+    setSuccess("");
+
+    try {
+      await approveIssue(issueId);
+      setSuccess("Issue approved successfully.");
+      setSelectedIssue(null);
+      await fetchIssues(true);
+    } catch (err) {
+      setError(err.message || "Failed to approve the issue.");
+    } finally {
+      setActionId(null);
+    }
   };
 
-  // =========================
-  // Status Class
-  // =========================
+  const handleDismiss = async (issue) => {
+    const issueId = getId(issue);
+    if (!issueId) {
+      setError("This issue does not have a valid ID.");
+      return;
+    }
 
-  const getStatusClass = (status) => {
-    if (status === "Approved") return "status-approved";
-    if (status === "Dismissed") return "status-dismissed";
+    const reason = window.prompt(
+      "Enter a reason for dismissing this issue:"
+    );
 
-    return "status-pending";
+    if (reason === null) return;
+
+    if (!reason.trim()) {
+      setError("Please enter a reason before dismissing the issue.");
+      return;
+    }
+
+    setActionId(issueId);
+    setError("");
+    setSuccess("");
+
+    try {
+      await dismissIssue(issueId, reason.trim());
+      setSuccess("Issue dismissed successfully.");
+      setSelectedIssue(null);
+      await fetchIssues(true);
+    } catch (err) {
+      setError(err.message || "Failed to dismiss the issue.");
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleRefresh = () => {
+    setSuccess("");
+    fetchIssues(true);
+  };
+
+  const clearMessages = () => {
+    setError("");
+    setSuccess("");
   };
 
   return (
-    <div className="issue-management">
+    <main className="issue-management">
+      <header className="im-header">
+        <div className="im-header-copy">
+          <div className="im-eyebrow">
+            <ShieldCheck size={15} />
+            <span>COMMUNITY MODERATION</span>
+          </div>
 
-      {/* =========================
-          HEADER
-      ========================= */}
-
-      <div className="issue-page-header">
-        <div>
-          <h1>Issue Reports</h1>
-
+          <h1>Issue Management</h1>
           <p>
-            Review and manage community issues reported by users.
+            Review community reports, approve valid issues, and keep VoiceHub
+            helpful and trustworthy.
           </p>
         </div>
 
         <button
-          className="refresh-button"
-          onClick={fetchIssues}
-          disabled={loading}
+          type="button"
+          className="im-refresh-button"
+          onClick={handleRefresh}
+          disabled={refreshing}
         >
-          <RefreshCw size={17} />
-
-          Refresh
-        </button>
-      </div>
-
-      {/* =========================
-          SEARCH
-      ========================= */}
-
-      <div className="issue-toolbar">
-
-        <div className="issue-search">
-          <Search size={18} />
-
-          <input
-            type="text"
-            placeholder="Search issues..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <RefreshCw
+            size={17}
+            className={refreshing ? "im-spin" : ""}
           />
-        </div>
+          {refreshing ? "Refreshing..." : "Refresh"}
+        </button>
+      </header>
 
-        <div className="issue-count">
-          {filteredIssues.length} Issues
-        </div>
+      <section className="im-stats-grid" aria-label="Issue statistics">
+        <article className="im-stat-card">
+          <div className="im-stat-icon im-icon-blue">
+            <FileText size={21} />
+          </div>
+          <div className="im-stat-info">
+            <span>Total issues</span>
+            <strong>{counts.total}</strong>
+            <small>All submitted reports</small>
+          </div>
+        </article>
 
-      </div>
+        <article className="im-stat-card">
+          <div className="im-stat-icon im-icon-amber">
+            <Clock3 size={21} />
+          </div>
+          <div className="im-stat-info">
+            <span>Pending reviews</span>
+            <strong>{counts.pending}</strong>
+            <small>Awaiting a decision</small>
+          </div>
+        </article>
 
-      {/* =========================
-          LOADING
-      ========================= */}
+        <article className="im-stat-card">
+          <div className="im-stat-icon im-icon-green">
+            <CheckCircle2 size={21} />
+          </div>
+          <div className="im-stat-info">
+            <span>Approved</span>
+            <strong>{counts.approved}</strong>
+            <small>Accepted community reports</small>
+          </div>
+        </article>
 
-      {loading && (
-        <div className="issue-empty">
-          <RefreshCw size={25} className="loading-icon" />
+        <article className="im-stat-card">
+          <div className="im-stat-icon im-icon-red">
+            <Trash2 size={21} />
+          </div>
+          <div className="im-stat-info">
+            <span>Dismissed</span>
+            <strong>{counts.dismissed}</strong>
+            <small>Reports not accepted</small>
+          </div>
+        </article>
+      </section>
 
-          <p>Loading issues...</p>
+      {(error || success) && (
+        <div
+          className={`im-message ${error ? "im-message-error" : "im-message-success"}`}
+          role="status"
+        >
+          {error ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
+          <span>{error || success}</span>
+          <button
+            type="button"
+            aria-label="Dismiss message"
+            onClick={clearMessages}
+          >
+            <X size={17} />
+          </button>
         </div>
       )}
 
-      {/* =========================
-          NO ISSUES
-      ========================= */}
+      <section className="im-workspace">
+        <div className="im-toolbar">
+          <div className="im-search">
+            <Search size={19} />
+            <input
+              type="search"
+              placeholder="Search by title, category, location or reporter..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              aria-label="Search issues"
+            />
+            {search && (
+              <button
+                type="button"
+                className="im-clear-search"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
 
-      {!loading && filteredIssues.length === 0 && (
-        <div className="issue-empty">
-          <MessageCircle size={35} />
-
-          <h3>No issues found</h3>
-
-          <p>
-            There are no issues matching your search.
-          </p>
-        </div>
-      )}
-
-      {/* =========================
-          ISSUE CARDS
-      ========================= */}
-
-      {!loading &&
-        filteredIssues.map((issue) => {
-
-          const firstImage =
-            issue.images?.length > 0
-              ? issue.images[0].url
-              : null;
-
-          return (
-            <div className="issue-card" key={issue._id}>
-
-              {/* IMAGE */}
-
-              <div className="issue-image-wrapper">
-
-                {firstImage ? (
-                  <img
-                    src={firstImage}
-                    alt={issue.title}
-                    className="issue-image"
-                  />
-                ) : (
-                  <div className="issue-image-placeholder">
-                    <MessageCircle size={30} />
-                  </div>
+          <div className="im-filter-tabs" aria-label="Filter issues">
+            {FILTERS.map((item) => (
+              <button
+                type="button"
+                key={item}
+                className={filter === item ? "active" : ""}
+                onClick={() => setFilter(item)}
+                aria-pressed={filter === item}
+              >
+                {item}
+                {item === "Pending" && counts.pending > 0 && (
+                  <span className="im-filter-count">{counts.pending}</span>
                 )}
+              </button>
+            ))}
+          </div>
+        </div>
 
-              </div>
+        <div className="im-list-heading">
+          <div>
+            <h2>Submitted reports</h2>
+            <p>
+              {filteredIssues.length}{" "}
+              {filteredIssues.length === 1 ? "issue" : "issues"} found
+            </p>
+          </div>
 
-              {/* CONTENT */}
+          <span className="im-review-note">
+            <Users size={15} />
+            Moderator review queue
+          </span>
+        </div>
 
-              <div className="issue-content">
+        {loading ? (
+          <div className="im-state-panel">
+            <span className="im-loading-spinner" />
+            <h3>Loading community issues</h3>
+            <p>Please wait while the reports are retrieved.</p>
+          </div>
+        ) : filteredIssues.length === 0 ? (
+          <div className="im-state-panel">
+            <div className="im-empty-icon">
+              <Search size={26} />
+            </div>
+            <h3>
+              {issues.length === 0 ? "No issues submitted yet" : "No matching issues"}
+            </h3>
+            <p>
+              {issues.length === 0
+                ? "New community reports will appear here when submitted."
+                : "Try another search term or select a different status filter."}
+            </p>
 
-                <div className="issue-top">
+            {(search || filter !== "All") && (
+              <button
+                type="button"
+                className="im-reset-button"
+                onClick={() => {
+                  setSearch("");
+                  setFilter("All");
+                }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="im-issue-list">
+            {filteredIssues.map((issue) => {
+              const issueId = getId(issue);
+              const moderationStatus = getModerationStatus(issue);
+              const image = getIssueImage(issue);
+              const isBusy = actionId === issueId;
 
-                  <div>
+              return (
+                <article className="im-issue-card" key={issueId}>
+                  <div className="im-card-image">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt={issue.title || "Community issue"}
+                        loading="lazy"
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="im-image-placeholder">
+                        <ImageIcon size={31} />
+                        <span>No image attached</span>
+                      </div>
+                    )}
 
-                    <div className="issue-title-row">
+                    <span className={`im-status-badge im-status-${moderationStatus.toLowerCase()}`}>
+                      <span className="im-status-dot" />
+                      {moderationStatus}
+                    </span>
+                  </div>
 
-                      <h2>{issue.title}</h2>
-
-                      <span
-                        className={`issue-status ${getStatusClass(
-                          issue.moderationStatus
-                        )}`}
-                      >
-                        {issue.moderationStatus}
+                  <div className="im-card-content">
+                    <div className="im-card-topline">
+                      <span className="im-category">
+                        {issue.category || "Other"}
                       </span>
-
+                      <span className="im-date">
+                        <CalendarDays size={14} />
+                        {formatDate(issue.createdAt || issue.updatedAt)}
+                      </span>
                     </div>
 
-                    <span className="issue-category">
-                      {issue.category}
-                    </span>
+                    <h3 className="im-issue-title">
+                      {issue.title || "Untitled issue"}
+                    </h3>
 
+                    <p className="im-issue-description">
+                      {issue.description || "No description provided."}
+                    </p>
+
+                    <div className="im-card-meta">
+                      <span>
+                        <MapPin size={15} />
+                        {issue.location || "Location not provided"}
+                      </span>
+                      <span>
+                        <Users size={15} />
+                        {getReporterName(issue)}
+                      </span>
+                    </div>
+
+                    <div className="im-card-bottom">
+                      <div className="im-engagement">
+                        <span title="Upvotes">
+                          <ThumbsUp size={15} />
+                          {issue.upvotes ?? issue.upvotedBy?.length ?? 0}
+                        </span>
+                        <span title="Downvotes">
+                          <ThumbsDown size={15} />
+                          {issue.downvotes ?? issue.downvotedBy?.length ?? 0}
+                        </span>
+                        {issue.status && (
+                          <span className="im-progress-status">
+                            <Clock3 size={14} />
+                            {issue.status}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="im-card-actions">
+                        <button
+                          type="button"
+                          className="im-view-button"
+                          onClick={() => setSelectedIssue(issue)}
+                        >
+                          <Eye size={16} />
+                          View details
+                        </button>
+
+                        {moderationStatus === "Pending" && (
+                          <>
+                            <button
+                              type="button"
+                              className="im-approve-button"
+                              onClick={() => handleApprove(issue)}
+                              disabled={isBusy}
+                            >
+                              <CheckCircle2 size={16} />
+                              {isBusy ? "Please wait..." : "Approve"}
+                            </button>
+
+                            <button
+                              type="button"
+                              className="im-dismiss-button"
+                              onClick={() => handleDismiss(issue)}
+                              disabled={isBusy}
+                            >
+                              <X size={16} />
+                              Dismiss
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-                </div>
+      {selectedIssue && (
+        <div
+          className="im-modal-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedIssue(null);
+            }
+          }}
+        >
+          <section
+            className="im-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="im-modal-title"
+          >
+            <div className="im-modal-header">
+              <div>
+                <span className="im-modal-eyebrow">
+                  <MessageSquareText size={15} />
+                  COMMUNITY REPORT
+                </span>
+                <h2 id="im-modal-title">Issue details</h2>
+              </div>
+              <button
+                type="button"
+                className="im-modal-close"
+                onClick={() => setSelectedIssue(null)}
+                aria-label="Close issue details"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-                {/* META */}
+            {getIssueImage(selectedIssue) && (
+              <div className="im-modal-image">
+                <img
+                  src={getIssueImage(selectedIssue)}
+                  alt={selectedIssue.title || "Issue attachment"}
+                />
+              </div>
+            )}
 
-                <div className="issue-meta">
-
-                  <div>
-                    <MapPin size={15} />
-                    <span>{issue.location}</span>
-                  </div>
-
-                  <div>
-                    <UserRound size={15} />
-
-                    <span>
-                      {issue.createdBy?.name || "Unknown User"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <CalendarDays size={15} />
-
-                    <span>
-                      {formatDate(issue.createdAt)}
-                    </span>
-                  </div>
-
-                </div>
-
-                {/* DESCRIPTION */}
-
-                <p className="issue-description">
-                  {issue.description}
-                </p>
-
-                {/* STATS */}
-
-                <div className="issue-stats">
-
-                  <span>
-                    <ThumbsUp size={15} />
-                    {issue.upvotes || 0}
-                  </span>
-
-                  <span>
-                    <ThumbsDown size={15} />
-                    {issue.downvotes || 0}
-                  </span>
-
-                  <span>
-                    <MessageCircle size={15} />
-                    Comments
-                  </span>
-
-                </div>
-
-                {/* ACTIONS */}
-
-                <div className="issue-actions">
-
-                  <button className="view-button">
-                    <Eye size={16} />
-                    View
-                  </button>
-
-                  {issue.moderationStatus === "Pending" && (
-                    <>
-                      <button className="approve-button">
-                        <Check size={16} />
-                        Approve
-                      </button>
-
-                      <button className="dismiss-button">
-                        <X size={16} />
-                        Dismiss
-                      </button>
-                    </>
-                  )}
-
-                  {issue.moderationStatus === "Approved" && (
-                    <button className="review-button">
-                      <Clock3 size={16} />
-                      Under Review
-                    </button>
-                  )}
-
-                </div>
-
+            <div className="im-modal-body">
+              <div className="im-modal-status-row">
+                <span className="im-category">
+                  {selectedIssue.category || "Other"}
+                </span>
+                <span className={`im-status-badge im-status-${getModerationStatus(selectedIssue).toLowerCase()}`}>
+                  <span className="im-status-dot" />
+                  {getModerationStatus(selectedIssue)}
+                </span>
               </div>
 
-            </div>
-          );
-        })}
+              <h3 className="im-modal-issue-title">
+                {selectedIssue.title || "Untitled issue"}
+              </h3>
 
-    </div>
+              <p className="im-modal-description">
+                {selectedIssue.description || "No description provided."}
+              </p>
+
+              <div className="im-detail-grid">
+                <div className="im-detail-item">
+                  <MapPin size={17} />
+                  <div>
+                    <span>Location</span>
+                    <strong>{selectedIssue.location || "Not provided"}</strong>
+                  </div>
+                </div>
+
+                <div className="im-detail-item">
+                  <Users size={17} />
+                  <div>
+                    <span>Reported by</span>
+                    <strong>{getReporterName(selectedIssue)}</strong>
+                  </div>
+                </div>
+
+                <div className="im-detail-item">
+                  <CalendarDays size={17} />
+                  <div>
+                    <span>Submitted on</span>
+                    <strong>
+                      {formatDate(selectedIssue.createdAt || selectedIssue.updatedAt)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="im-detail-item">
+                  <ArrowUp size={17} />
+                  <div>
+                    <span>Upvotes</span>
+                    <strong>
+                      {selectedIssue.upvotes ?? selectedIssue.upvotedBy?.length ?? 0}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="im-detail-item">
+                  <ArrowDown size={17} />
+                  <div>
+                    <span>Downvotes</span>
+                    <strong>
+                      {selectedIssue.downvotes ?? selectedIssue.downvotedBy?.length ?? 0}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="im-detail-item">
+                  <Clock3 size={17} />
+                  <div>
+                    <span>Progress status</span>
+                    <strong>{selectedIssue.status || "Submitted"}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {selectedIssue.dismissReason && (
+                <div className="im-dismiss-reason">
+                  <strong>Dismissal reason</strong>
+                  <p>{selectedIssue.dismissReason}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="im-modal-footer">
+              <button
+                type="button"
+                className="im-view-button"
+                onClick={() => setSelectedIssue(null)}
+              >
+                Close
+              </button>
+
+              {getModerationStatus(selectedIssue) === "Pending" && (
+                <>
+                  <button
+                    type="button"
+                    className="im-dismiss-button"
+                    disabled={actionId === getId(selectedIssue)}
+                    onClick={() => handleDismiss(selectedIssue)}
+                  >
+                    <X size={16} />
+                    Dismiss issue
+                  </button>
+
+                  <button
+                    type="button"
+                    className="im-approve-button"
+                    disabled={actionId === getId(selectedIssue)}
+                    onClick={() => handleApprove(selectedIssue)}
+                  >
+                    <CheckCircle2 size={16} />
+                    Approve issue
+                  </button>
+                </>
+              )}
+            </div>
+          </section>
+        </div>
+      )}
+    </main>
   );
 }
 

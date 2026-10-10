@@ -1,7 +1,9 @@
 const express = require("express");
 
 const upload = require("../midleware/upload");
+
 const authenticate = require("../midleware/auth");
+
 const authorizeRoles = require("../midleware/role");
 
 const {
@@ -11,6 +13,7 @@ const {
   getPublicIssues,
   getManageIssues,
   getMyIssues,
+  voteIssue,
 } = require("../controler/issue");
 
 const router = express.Router();
@@ -19,7 +22,10 @@ const router = express.Router();
 // Public - Get Approved Issues
 // =========================
 
-router.get("/", getPublicIssues);
+router.get(
+  "/",
+  getPublicIssues
+);
 
 // =========================
 // Admin / Moderator - Get All Issues
@@ -33,6 +39,16 @@ router.get(
 );
 
 // =========================
+// Logged-in User - Get My Issues
+// =========================
+
+router.get(
+  "/my",
+  authenticate,
+  getMyIssues
+);
+
+// =========================
 // User - Create Issue
 // =========================
 
@@ -41,6 +57,16 @@ router.post(
   authenticate,
   upload.array("images", 5),
   createIssue
+);
+
+// =========================
+// Logged-in User - Vote
+// =========================
+
+router.patch(
+  "/:id/vote",
+  authenticate,
+  voteIssue
 );
 
 // =========================
@@ -63,15 +89,6 @@ router.patch(
   authenticate,
   authorizeRoles("moderator", "admin"),
   dismissIssue
-);
-// =========================
-// Logged-in User - Get My Issues
-// =========================
-
-router.get(
-  "/my",
-  authenticate,
-  getMyIssues
 );
 
 module.exports = router;

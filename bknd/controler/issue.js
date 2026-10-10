@@ -11,6 +11,7 @@ const getPublicIssues = async (req, res) => {
       moderationStatus: "Approved",
     })
       .populate("createdBy", "name")
+      .select("-upvotedBy -downvotedBy")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -28,6 +29,11 @@ const getPublicIssues = async (req, res) => {
     });
   }
 };
+
+// =========================
+// Create Issue
+// =========================
+
 const createIssue = async (req, res) => {
   const uploadedImages = [];
 
@@ -119,6 +125,7 @@ const createIssue = async (req, res) => {
     });
   }
 };
+
 // =========================
 // Approve Issue
 // =========================
@@ -221,6 +228,7 @@ const dismissIssue = async (req, res) => {
     });
   }
 };
+
 // =========================
 // Get Issues for Admin / Moderator
 // =========================
@@ -229,6 +237,7 @@ const getManageIssues = async (req, res) => {
   try {
     const issues = await Issue.find({})
       .populate("createdBy", "name email")
+      .select("-upvotedBy -downvotedBy")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -246,6 +255,7 @@ const getManageIssues = async (req, res) => {
     });
   }
 };
+
 // =========================
 // Get My Issues - Logged-in User
 // =========================
@@ -256,12 +266,22 @@ const getMyIssues = async (req, res) => {
       createdBy: req.user._id,
     })
       .populate("createdBy", "name email")
+      .select("-upvotedBy -downvotedBy")
       .sort({ createdAt: -1 });
+
+    const formattedIssues = issues.map((issue) => {
+      const issueObject = issue.toObject();
+
+      return {
+        ...issueObject,
+        userVote: "none",
+      };
+    });
 
     res.status(200).json({
       success: true,
-      total: issues.length,
-      issues,
+      total: formattedIssues.length,
+      issues: formattedIssues,
     });
   } catch (error) {
     console.error("Get my issues error:", error);
@@ -273,11 +293,154 @@ const getMyIssues = async (req, res) => {
     });
   }
 };
+
+// =========================
+// Vote on Issue
+// =========================
+
+const voteIssue = async (req, res) => {
+  try {
+    const { vote } = req.body;
+
+    if (!["up", "down"].includes(vote)) {
+      return res.status(400).json({
+        success: false,
+        message: "Vote must be either 'up' or 'down'",
+      });
+    }
+
+    const issue = await Issue.findById(req.params.id);
+
+    if (!issue) {
+      return res.status(404).json({
+        success: false,
+        message: "Issue not found",
+      });
+    }
+
+    // Only approved issues can receive community votes
+    if (issue.moderationStatus !== "Approved") {
+      return res.status(400).json({
+        success: false,
+        message: "Only approved issues can be voted on",
+      });
+    }
+
+    const userId = req.user._id;
+
+    const hasUpvoted = issue.upvotedBy.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    const hasDownvoted = issue.downvotedBy.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    // =========================
+    // UPVOTE
+    // =========================
+
+    if (vote === "up") {
+      // Clicking upvote again removes the upvote
+      if (hasUpvoted) {
+        issue.upvotedBy.pull(userId);
+
+        issue.upvotes = Math.max(
+          0,
+          issue.upvotes - 1
+        );
+      } else {
+        // Remove existing downvote first
+        if (hasDownvoted) {
+          issue.downvotedBy.pull(userId);
+
+          issue.downvotes = Math.max(
+            0,
+            issue.downvotes - 1
+          );
+        }
+
+        issue.upvotedBy.addToSet(userId);
+        issue.upvotes += 1;
+      }
+    }
+
+    // =========================
+    // DOWNVOTE
+    // =========================
+
+    if (vote === "down") {
+      // Clicking downvote again removes the downvote
+      if (hasDownvoted) {
+        issue.downvotedBy.pull(userId);
+
+        issue.downvotes = Math.max(
+          0,
+          issue.downvotes - 1
+        );
+      } else {
+        // Remove existing upvote first
+        if (hasUpvoted) {
+          issue.upvotedBy.pull(userId);
+
+          issue.upvotes = Math.max(
+            0,
+            issue.upvotes - 1
+          );
+        }
+
+        issue.downvotedBy.addToSet(userId);
+        issue.downvotes += 1;
+      }
+    }
+
+    await issue.save();
+
+    let userVote = "none";
+
+    if (
+      issue.upvotedBy.some(
+        (id) => id.toString() === userId.toString()
+      )
+    ) {
+      userVote = "up";
+    }
+
+    if (
+      issue.downvotedBy.some(
+        (id) => id.toString() === userId.toString()
+      )
+    ) {
+      userVote = "down";
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Vote updated successfully",
+      issue: {
+        _id: issue._id,
+        upvotes: issue.upvotes,
+        downvotes: issue.downvotes,
+        userVote,
+      },
+    });
+  } catch (error) {
+    console.error("Vote issue error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update vote",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getMyIssues,
   createIssue,
   approveIssue,
   dismissIssue,
   getPublicIssues,
-  getManageIssues
+  getManageIssues,
+  voteIssue,
 };
