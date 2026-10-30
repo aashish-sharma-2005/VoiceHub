@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:3000/api/dashboard";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/dashboard`;
 
 /*
  * Public community dashboard.

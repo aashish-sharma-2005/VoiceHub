@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/admin";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/admin`;
 
 const getToken = () =>
     localStorage.getItem("voicehub_token") ||
