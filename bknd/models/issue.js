@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const imageSchema = new mongoose.Schema(
@@ -101,7 +102,8 @@ const issueSchema = new mongoose.Schema(
     },
 
     // =========================
-    // Community Voting
+    // Community Vote Counts
+    // Actual votes are stored in the Vote model
     // =========================
 
     upvotes: {
@@ -115,22 +117,6 @@ const issueSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-
-    // Users who have upvoted
-    upvotedBy: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-    // Users who have downvoted
-    downvotedBy: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
   },
   {
     timestamps: true,

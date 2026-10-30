@@ -1,0 +1,580 @@
+
+.admin-status-page {
+    padding: 28px;
+    color: #172033;
+    min-width: 0;
+}
+
+.admin-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.admin-status-eyebrow {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+}
+
+.admin-status-header h1 {
+    margin: 9px 0;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 750;
+    letter-spacing: -0.6px;
+}
+
+.admin-status-header p,
+.admin-status-section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.admin-status-refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    background: #fff;
+    color: #24334d;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.admin-status-refresh:hover {
+    background: #f8fafc;
+    border-color: #b8c6da;
+}
+
+.admin-status-refresh:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.admin-status-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.admin-status-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 19px 16px;
+    border: 1px solid #e5eaf2;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(15 23 42 / 3%);
+}
+
+.admin-status-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 43px;
+    height: 43px;
+    border-radius: 11px;
+}
+
+.admin-status-stat-icon.total {
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.admin-status-stat-icon.submitted {
+    color: #b45309;
+    background: #fff7ed;
+}
+
+.admin-status-stat-icon.review {
+    color: #7c3aed;
+    background: #f5f3ff;
+}
+
+.admin-status-stat-icon.progress {
+    color: #0369a1;
+    background: #e0f2fe;
+}
+
+.admin-status-stat-icon.resolved {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.admin-status-stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.admin-status-stat-content span {
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.admin-status-stat-content strong {
+    color: #172033;
+    font-size: 25px;
+    line-height: 1;
+    font-weight: 750;
+}
+
+.admin-status-content {
+    overflow: hidden;
+    border: 1px solid #e5eaf2;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 14px rgb(15 23 42 / 3%);
+}
+
+.admin-status-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 23px 24px;
+}
+
+.admin-status-section-heading h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.admin-status-count {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    color: #475569;
+    background: #f8fafc;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.admin-status-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 0 24px 20px;
+}
+
+.admin-status-search {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+    min-width: 0;
+    height: 43px;
+    padding: 0 13px;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    color: #94a3b8;
+    background: #fff;
+}
+
+.admin-status-search:focus-within {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+.admin-status-search input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    color: #172033;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+}
+
+.admin-status-search input::placeholder {
+    color: #94a3b8;
+}
+
+.admin-status-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 220px;
+    flex-shrink: 0;
+    color: #64748b;
+}
+
+.admin-status-filter select {
+    width: 100%;
+    height: 43px;
+    padding: 0 35px 0 12px;
+    appearance: none;
+    border: 1px solid #dbe3ef;
+    border-radius: 9px;
+    outline: none;
+    color: #334155;
+    background: #fff;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.admin-status-filter > svg {
+    position: absolute;
+    right: 12px;
+    pointer-events: none;
+}
+
+.admin-status-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-status-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.admin-status-table thead {
+    background: #f8fafc;
+}
+
+.admin-status-table th {
+    padding: 13px 18px;
+    border-top: 1px solid #edf1f6;
+    border-bottom: 1px solid #e5eaf2;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.admin-status-table th:first-child,
+.admin-status-table td:first-child {
+    padding-left: 24px;
+}
+
+.admin-status-table td {
+    padding: 17px 18px;
+    border-bottom: 1px solid #edf1f6;
+    color: #475569;
+    font-size: 12px;
+}
+
+.admin-status-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-status-table tbody tr:hover {
+    background: #fbfdff;
+}
+
+.admin-status-issue-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 210px;
+}
+
+.admin-status-issue-image,
+.admin-status-issue-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 45px;
+    height: 45px;
+    border-radius: 9px;
+    object-fit: cover;
+    color: #64748b;
+    background: #f1f5f9;
+}
+
+.admin-status-issue-cell > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.admin-status-issue-cell strong {
+    max-width: 240px;
+    overflow: hidden;
+    color: #1e293b;
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+}
+
+.admin-status-issue-cell span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.admin-status-category {
+    display: inline-block;
+    max-width: 175px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-status-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 190px;
+    color: #64748b;
+}
+
+.admin-status-location svg {
+    flex-shrink: 0;
+}
+
+.admin-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.admin-status-badge.submitted {
+    color: #9a3412;
+    background: #ffedd5;
+}
+
+.admin-status-badge.under-review {
+    color: #6d28d9;
+    background: #ede9fe;
+}
+
+.admin-status-badge.in-progress {
+    color: #075985;
+    background: #e0f2fe;
+}
+
+.admin-status-badge.resolved {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.admin-status-select-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-status-select-wrapper select {
+    min-width: 135px;
+    max-width: 165px;
+    height: 36px;
+    padding: 0 9px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    outline: none;
+    color: #334155;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.admin-status-select-wrapper select:focus {
+    border-color: #60a5fa;
+}
+
+.admin-status-select-wrapper select:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.admin-status-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 230px;
+    padding: 30px 20px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+.admin-status-state h3 {
+    margin: 14px 0 5px;
+    color: #334155;
+    font-size: 16px;
+}
+
+.admin-status-state p {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.admin-status-clear {
+    margin-top: 16px;
+    padding: 8px 12px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    color: #2563eb;
+    background: #fff;
+    cursor: pointer;
+}
+
+.admin-status-error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 24px 20px;
+    padding: 15px;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.admin-status-error > svg {
+    flex-shrink: 0;
+}
+
+.admin-status-error > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-status-error strong {
+    font-size: 13px;
+}
+
+.admin-status-error p {
+    margin: 4px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+}
+
+.admin-status-error button {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    color: #b91c1c;
+    background: #fff;
+    cursor: pointer;
+}
+
+.admin-status-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #edf1f6;
+    color: #64748b;
+    background: #fcfdff;
+    font-size: 12px;
+}
+
+.admin-status-spinning {
+    animation: admin-status-spin 1s linear infinite;
+}
+
+@keyframes admin-status-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 1200px) {
+    .admin-status-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-status-page {
+        padding: 18px;
+    }
+
+    .admin-status-header {
+        flex-direction: column;
+    }
+
+    .admin-status-header h1 {
+        font-size: 24px;
+    }
+
+    .admin-status-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .admin-status-stat-card {
+        padding: 14px 11px;
+        gap: 10px;
+    }
+
+    .admin-status-stat-icon {
+        width: 37px;
+        height: 37px;
+    }
+
+    .admin-status-stat-content span {
+        font-size: 10px;
+    }
+
+    .admin-status-stat-content strong {
+        font-size: 22px;
+    }
+
+    .admin-status-section-heading {
+        align-items: flex-start;
+        padding: 18px;
+    }
+
+    .admin-status-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 18px 18px;
+    }
+
+    .admin-status-filter {
+        width: 100%;
+    }
+
+    .admin-status-table th:first-child,
+    .admin-status-table td:first-child {
+        padding-left: 18px;
+    }
+
+    .admin-status-error {
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin: 0 18px 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .admin-status-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-status-stat-card {
+        padding: 14px;
+    }
+}

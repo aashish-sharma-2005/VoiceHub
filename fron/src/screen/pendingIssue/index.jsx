@@ -208,18 +208,33 @@ function PendingIssues() {
 
   /* ISSUE IMAGE */
 
-  const getIssueImage = (issue) => {
-    if (issue?.images?.length > 0 && issue.images[0]?.url) {
-      return issue.images[0].url;
-    }
 
-    return "/images/default-issue.jpeg";
-  };
+/* ISSUE IMAGE */
 
-  const handleImageError = (event) => {
-    event.currentTarget.onerror = null;
-    event.currentTarget.src = "/images/default-issue.jpeg";
-  };
+const DEFAULT_ISSUE_IMAGE = "/images/default-issue.jpeg";
+
+const getIssueImage = (issue) => {
+  const images = Array.isArray(issue?.images) ? issue.images : [];
+
+  const validImage = images.find(
+    (image) =>
+      typeof image?.url === "string" &&
+      image.url.trim() !== ""
+  );
+
+  return validImage?.url || DEFAULT_ISSUE_IMAGE;
+};
+
+const handleImageError = (event) => {
+  const img = event.currentTarget;
+
+  if (img.dataset.fallbackApplied === "true") return;
+
+  img.dataset.fallbackApplied = "true";
+  img.onerror = null;
+  img.src = DEFAULT_ISSUE_IMAGE;
+};
+
 
   return (
     <div className="pending-issues-page">

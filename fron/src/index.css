@@ -1891,3 +1891,105 @@ img {
   font-size: 15px;
   font-weight: 700;
 }
+
+.issue-voting {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 18px 18px;
+}
+
+.issue-vote-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 76px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #475569;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.issue-vote-button:hover:not(:disabled) {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.issue-vote-button.active {
+    background: #eff6ff;
+    color: #2563eb;
+    border-color: #93c5fd;
+}
+
+.issue-vote-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.issue-details-button {
+    border: 0;
+    padding: 4px 0;
+    background: transparent;
+    color: #2563eb;
+    font: inherit;
+    cursor: pointer;
+}
+
+.issue-expanded-details {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    overflow-wrap: anywhere;
+}
+
+.issue-expanded-details p {
+    margin: 0 0 8px;
+}
+
+.vote-spinner {
+    animation: issue-vote-spin 1s linear infinite;
+}
+
+@keyframes issue-vote-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.issues-grid.compact-view .issue-card {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: start;
+}
+
+.issues-grid.compact-view .issue-image-wrapper {
+    min-height: 150px;
+    height: 100%;
+}
+
+.issues-grid.compact-view .issue-image {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+    object-fit: cover;
+}
+
+.issues-grid.compact-view .issue-voting {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+    .issues-grid.compact-view .issue-card {
+        grid-template-columns: 1fr;
+    }
+
+    .issues-grid.compact-view .issue-image-wrapper {
+        height: 180px;
+    }
+}

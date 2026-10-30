@@ -1372,3 +1372,121 @@
   -webkit-appearance: none;
   appearance: none;
 }
+
+
+/* =========================================================
+   ACCESSIBILITY AND EDGE-CASE POLISH
+   ========================================================= */
+
+.issue-management .im-modal-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
+  padding: 24px;
+}
+
+.issue-management .im-card-image > img,
+.issue-management .im-modal-image img {
+  display: block;
+}
+
+.issue-management .im-card-actions button:focus-visible,
+.issue-management .im-filter-tabs button:focus-visible,
+.issue-management .im-message button:focus-visible,
+.issue-management .im-clear-search:focus-visible,
+.issue-management .im-modal-close:focus-visible,
+.issue-management .im-reset-button:focus-visible {
+  outline: 3px solid rgba(70, 91, 230, 0.28);
+  outline-offset: 2px;
+}
+
+.issue-management .im-modal-image-placeholder span {
+  color: #8995ac;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 850px) {
+  .issue-management .im-card-actions > button {
+    min-width: 0;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 600px) {
+  .issue-management .im-header {
+    flex-wrap: wrap;
+  }
+
+  .issue-management .im-refresh-button {
+    flex-shrink: 0;
+  }
+
+  .issue-management .im-modal-footer > button {
+    min-height: 40px;
+  }
+}
+
+
+/* Multiple issue images and click-to-zoom gallery */
+.issue-management .im-photo-count {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(15, 23, 42, .78);
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+}
+.issue-management .im-modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding: 16px 20px 4px;
+  background: #fff;
+}
+.issue-management .im-gallery-image {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 120px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #e5eaf2;
+  border-radius: 11px;
+  background: #f1f4f9;
+  cursor: zoom-in;
+}
+.issue-management .im-gallery-image-featured { grid-column: span 3; min-height: 220px; max-height: 310px; }
+.issue-management .im-gallery-image img { display: block; width: 100%; height: 100%; min-height: 120px; max-height: 180px; object-fit: cover; transition: transform .2s ease; }
+.issue-management .im-gallery-image-featured img { max-height: 310px; }
+.issue-management .im-gallery-image:hover img { transform: scale(1.025); }
+.issue-management .im-gallery-zoom { position: absolute; right: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 7px; color: #fff; background: rgba(15,23,42,.75); font-size: 11px; font-weight: 650; opacity: 0; transition: opacity .18s ease; }
+.issue-management .im-gallery-image:hover .im-gallery-zoom,
+.issue-management .im-gallery-image:focus-visible .im-gallery-zoom { opacity: 1; }
+.issue-management .im-gallery-fallback { display: flex; min-height: 110px; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #64748b; font-size: 12px; }
+.issue-management .im-gallery-fallback-hidden { display: none; }
+.issue-management .im-lightbox { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 56px 24px 24px; background: rgba(5, 10, 22, .92); }
+.issue-management .im-lightbox img { display: block; max-width: min(1200px, 100%); max-height: calc(100vh - 90px); object-fit: contain; border-radius: 8px; box-shadow: 0 20px 70px rgba(0,0,0,.35); }
+.issue-management .im-lightbox-close { position: absolute; top: 16px; right: 18px; display: flex; width: 42px; height: 42px; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.28); border-radius: 50%; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; }
+.issue-management .im-lightbox-close:hover { background: rgba(255,255,255,.2); }
+@media (max-width: 600px) {
+  .issue-management .im-modal-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px 12px 2px; gap: 7px; }
+  .issue-management .im-gallery-image-featured { grid-column: span 2; min-height: 170px; }
+  .issue-management .im-gallery-image { min-height: 100px; }
+  .issue-management .im-gallery-image img { min-height: 100px; }
+  .issue-management .im-lightbox { padding: 54px 12px 16px; }
+}

@@ -1,3 +1,12 @@
+/*
+ * CHANGES:
+ * - Commented out Notifications from Moderator sidebar.
+ * - Commented out Comments from Moderator sidebar.
+ * - Commented out Notifications from Admin sidebar.
+ * - Commented out Comments from Admin sidebar.
+ * - User sidebar remains unchanged.
+ */
+
 import {
     BarChart3,
     Compass,
@@ -25,7 +34,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { logout } from "../../store/loginSlice";
-import './sidebar.css'
+import "./sidebar.css";
+
 function Sidebar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -34,6 +44,7 @@ function Sidebar() {
      * First try Redux.
      * If Redux has not loaded yet, fall back to storage.
      */
+
     const reduxUser = useSelector(
         (state) => state.login?.user
     );
@@ -62,12 +73,14 @@ function Sidebar() {
     /*
      * Active navigation styling
      */
+
     const linkClass = ({ isActive }) =>
         `sidebar-link ${isActive ? "active" : ""}`;
 
     /*
      * Logout
      */
+
     const handleLogout = () => {
         dispatch(logout());
 
@@ -83,6 +96,7 @@ function Sidebar() {
     /*
      * USER SIDEBAR
      */
+
     const userLinks = (
         <>
             <NavLink
@@ -154,6 +168,7 @@ function Sidebar() {
     /*
      * MODERATOR SIDEBAR
      */
+
     const moderatorLinks = (
         <>
             <NavLink
@@ -204,6 +219,7 @@ function Sidebar() {
                 <span>Reported Content</span>
             </NavLink>
 
+            {/*
             <NavLink
                 to="/moderator/comments"
                 className={linkClass}
@@ -211,6 +227,7 @@ function Sidebar() {
                 <MessageSquare size={19} />
                 <span>Comments</span>
             </NavLink>
+            */}
 
             <NavLink
                 to="/moderator/history"
@@ -220,6 +237,7 @@ function Sidebar() {
                 <span>Moderation History</span>
             </NavLink>
 
+            {/*
             <NavLink
                 to="/notifications"
                 className={linkClass}
@@ -227,6 +245,7 @@ function Sidebar() {
                 <Bell size={19} />
                 <span>Notifications</span>
             </NavLink>
+            */}
 
             <NavLink
                 to="/help"
@@ -249,6 +268,7 @@ function Sidebar() {
     /*
      * ADMIN SIDEBAR
      */
+
     const adminLinks = (
         <>
             <NavLink
@@ -315,6 +335,7 @@ function Sidebar() {
                 <span>Reports</span>
             </NavLink>
 
+            {/*
             <NavLink
                 to="/admin/comments"
                 className={linkClass}
@@ -322,7 +343,9 @@ function Sidebar() {
                 <MessageSquare size={19} />
                 <span>Comments</span>
             </NavLink>
+            */}
 
+            {/*
             <NavLink
                 to="/notifications"
                 className={linkClass}
@@ -330,6 +353,7 @@ function Sidebar() {
                 <Bell size={19} />
                 <span>Notifications</span>
             </NavLink>
+            */}
 
             <NavLink
                 to="/admin/analytics"
@@ -369,6 +393,7 @@ function Sidebar() {
         <aside className="sidebar">
 
             {/* BRAND */}
+
             <div className="sidebar-brand">
                 <div className="sidebar-brand-icon">
                     <Flag size={20} />
@@ -386,6 +411,7 @@ function Sidebar() {
             </div>
 
             {/* LOCATION */}
+
             <div className="sidebar-location">
                 <MapPin size={16} />
 
@@ -396,6 +422,7 @@ function Sidebar() {
             </div>
 
             {/* ROLE */}
+
             <div className="sidebar-role">
                 <span className="sidebar-role-label">
                     Account
@@ -408,6 +435,7 @@ function Sidebar() {
             </div>
 
             {/* NAVIGATION */}
+
             <nav className="sidebar-nav">
 
                 {role === "admin" && adminLinks}
@@ -420,14 +448,16 @@ function Sidebar() {
             </nav>
 
             {/* USER PROFILE / LOGOUT */}
+
             <div className="sidebar-bottom">
 
                 <div className="sidebar-user">
+
                     <div className="sidebar-user-avatar">
                         {user?.name
                             ? user.name
-                                  .charAt(0)
-                                  .toUpperCase()
+                                .charAt(0)
+                                .toUpperCase()
                             : "U"}
                     </div>
 
@@ -441,6 +471,7 @@ function Sidebar() {
                                 "user@voicehub.com"}
                         </span>
                     </div>
+
                 </div>
 
                 <button
@@ -453,6 +484,7 @@ function Sidebar() {
                 </button>
 
             </div>
+
         </aside>
     );
 }

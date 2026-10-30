@@ -1,21 +1,33 @@
-import { useState } from "react";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
     Search,
-    ChevronDown,
+    X,
+    SlidersHorizontal,
     ArrowUpDown,
     RotateCcw,
-    Navigation,
+    LayoutGrid,
+    List,
+    Flag,
+    ChevronDown,
+    Check,
+    TrendingUp,
+    Clock3,
+    MessageCircle,
+    Users,
+    Sparkles,
     CircleAlert,
-    Wrench,
-    Trash2,
-    CheckCircle2,
 } from "lucide-react";
 
 import IssueCard from "../issue/issueCard";
 
+import "./explore.css";
+
 function Explore({
-    issues,
-    total,
+    issues = [],
+    total = 0,
     search,
     setSearch,
     category,
@@ -29,261 +41,403 @@ function Explore({
     view,
     setView,
     resetFilters,
-    categories,
-    locations,
-    statusCounts,
+    categories = [],
+    locations = [],
+    statusCounts = {},
+    loading,
+    error,
+    votingIds = [],
+    onVote,
+    onToggleSave,
+    savingIds = [],
+    onRetry,
 }) {
+    const navigate = useNavigate();
 
     const [sortOpen, setSortOpen] = useState(false);
+    const [commentCountOverrides, setCommentCountOverrides] = useState({});
+    const searchRef = useRef(null);
+
+    // Keep the latest comment count for each issue without refetching issues.
+    const handleCommentCountChange = useCallback((issueId, count) => {
+        if (!issueId || !Number.isFinite(count)) return;
+
+        setCommentCountOverrides((previous) => ({
+            ...previous,
+            [String(issueId)]: Math.max(0, count),
+        }));
+    }, []);
+
+    const getCommentCount = useCallback(
+        (issue) => {
+            const issueId = String(issue?._id || "");
+
+            if (
+                issueId &&
+                Object.prototype.hasOwnProperty.call(
+                    commentCountOverrides,
+                    issueId
+                )
+            ) {
+                return commentCountOverrides[issueId];
+            }
+
+            if (typeof issue?.commentCount === "number") {
+                return issue.commentCount;
+            }
+
+            if (typeof issue?.commentsCount === "number") {
+                return issue.commentsCount;
+            }
+
+            if (Array.isArray(issue?.comments)) {
+                return issue.comments.length;
+            }
+
+            return 0;
+        },
+        [commentCountOverrides]
+    );
+
+    useEffect(() => {
+        const handleKeyboard = (event) => {
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "k"
+            ) {
+                event.preventDefault();
+                searchRef.current?.focus();
+            }
+
+            if (event.key === "Escape") {
+                setSortOpen(false);
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyboard);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyboard);
+        };
+    }, []);
+
+    const sortOptions = [
+        {
+            value: "most-upvoted",
+            label: "Most Upvoted",
+            icon: TrendingUp,
+        },
+        {
+            value: "newest",
+            label: "Newest First",
+            icon: Clock3,
+        },
+        {
+            value: "most-downvoted",
+            label: "Most Downvoted",
+            icon: ArrowUpDown,
+        },
+    ];
+
+    const selectedSort =
+        sortOptions.find((option) => option.value === sort) ||
+        sortOptions[0];
+
+    const activeFilters = useMemo(() => {
+        const filters = [];
+
+        if (search.trim()) {
+            filters.push({
+                type: "search",
+                label: `"${search.trim()}"`,
+            });
+        }
+
+        if (category !== "all") {
+            filters.push({
+                type: "category",
+                label: category,
+            });
+        }
+
+        if (location !== "all") {
+            filters.push({
+                type: "location",
+                label: location,
+            });
+        }
+
+        if (status !== "all") {
+            filters.push({
+                type: "status",
+                label: status,
+            });
+        }
+
+        return filters;
+    }, [search, category, location, status]);
+
+    const clearFilter = (type) => {
+        if (type === "search") setSearch("");
+        if (type === "category") setCategory("all");
+        if (type === "location") setLocation("all");
+        if (type === "status") setStatus("all");
+    };
+
+    const totalVotes = issues.reduce(
+        (totalValue, issue) =>
+            totalValue + Number(issue.upvotes || 0),
+        0
+    );
+
+    const totalComments = issues.reduce(
+        (totalValue, issue) =>
+            totalValue + getCommentCount(issue),
+        0
+    );
+
+    const handleViewIssue = (issue) => {
+        if (!issue?._id) return;
+
+        navigate(`/issue/${issue._id}`);
+    };
+
+    const handleReport = () => {
+        navigate("/report");
+    };
 
     return (
-        <div className="explore-page">
-
-            <div className="explore-header">
-
-                <div>
-
+        <main className="explore-page">
+            <section className="explore-header">
+                <div className="explore-title-area">
                     <div className="breadcrumb">
                         <span>Community Voice</span>
-                        <span>›</span>
-                        <span>Explore Community Issues</span>
-                        <span>›</span>
-                        <span>Metro Region</span>
+                        <span>/</span>
+                        <strong>Explore Community Issues</strong>
                     </div>
 
-                    <h1>Explore Community Issues</h1>
+                    <div className="explore-title-row">
+                        <div>
+                            <h1>Explore Community Issues</h1>
 
+                            <p className="explore-subtitle">
+                                Discover local problems, support important
+                                issues, and make your voice count.
+                            </p>
+                        </div>
+
+                        <div className="explore-title-badge">
+                            <Sparkles size={15} />
+                            <span>Community Powered</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="explore-header-actions">
-
                     <div className="view-toggle">
-
                         <button
                             type="button"
-                            className={`view-button ${view === "grid" ? "active" : ""}`}
+                            className={`view-button ${
+                                view === "grid" ? "active" : ""
+                            }`}
                             onClick={() => setView("grid")}
                         >
-                            ▦ Grid
+                            <LayoutGrid size={15} />
+                            Grid
                         </button>
 
                         <button
                             type="button"
-                            className={`view-button ${view === "compact" ? "active" : ""}`}
+                            className={`view-button ${
+                                view === "compact" ? "active" : ""
+                            }`}
                             onClick={() => setView("compact")}
                         >
-                            ☰ Compact
+                            <List size={15} />
+                            Compact
                         </button>
-
                     </div>
 
                     <button
                         type="button"
                         className="header-report-button"
+                        onClick={handleReport}
                     >
-                        ⚑ Report Issue
+                        <Flag size={16} />
+                        Report Issue
                     </button>
+                </div>
+            </section>
 
+            <section className="explore-stat-strip">
+                <div className="explore-stat-item">
+                    <div className="explore-stat-icon blue">
+                        <CircleAlert size={17} />
+                    </div>
+                    <div>
+                        <strong>{total}</strong>
+                        <span>Public Issues</span>
+                    </div>
                 </div>
 
-            </div>
+                <div className="explore-stat-item">
+                    <div className="explore-stat-icon green">
+                        <TrendingUp size={17} />
+                    </div>
+                    <div>
+                        <strong>{totalVotes}</strong>
+                        <span>Community Votes</span>
+                    </div>
+                </div>
 
-            <div className="explore-intro">
-                Discover problems reported by people around you and make your voice count.
-            </div>
+                <div className="explore-stat-item">
+                    <div className="explore-stat-icon purple">
+                        <MessageCircle size={17} />
+                    </div>
+                    <div>
+                        <strong>{totalComments}</strong>
+                        <span>Discussions</span>
+                    </div>
+                </div>
+
+                <div className="explore-stat-item">
+                    <div className="explore-stat-icon orange">
+                        <Users size={17} />
+                    </div>
+                    <div>
+                        <strong>{statusCounts.resolved || 0}</strong>
+                        <span>Resolved</span>
+                    </div>
+                </div>
+            </section>
 
             <section className="filter-panel">
-
-                <div className="filter-row">
-
+                <div className="filter-top-row">
                     <div className="large-search">
-
-                        <Search size={19} />
+                        <Search size={18} />
 
                         <input
-                            type="text"
+                            ref={searchRef}
+                            type="search"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search problems, locations or categories..."
+                            onChange={(event) =>
+                                setSearch(event.target.value)
+                            }
+                            placeholder="Search issues, locations, categories..."
                         />
 
-                        <span className="search-shortcut">
-                            ⌘K
-                        </span>
+                        {search && (
+                            <button
+                                type="button"
+                                className="search-clear"
+                                onClick={() => setSearch("")}
+                                aria-label="Clear search"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
 
+                        {!search && (
+                            <span className="search-shortcut">Ctrl K</span>
+                        )}
                     </div>
 
-                    {/* Category */}
-
                     <div className="filter-select-wrapper">
-
                         <select
-                            className="filter-select"
                             value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            onChange={(event) =>
+                                setCategory(event.target.value)
+                            }
                         >
-                            <option value="all">
-                                All Categories
-                            </option>
-
+                            <option value="all">All Categories</option>
                             {categories.map((item) => (
-                                <option
-                                    key={item}
-                                    value={item}
-                                >
+                                <option key={item} value={item}>
                                     {item}
                                 </option>
                             ))}
-
                         </select>
-
                     </div>
-
-                    {/* Location */}
 
                     <div className="filter-select-wrapper">
-
                         <select
-                            className="filter-select"
                             value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                            onChange={(event) =>
+                                setLocation(event.target.value)
+                            }
                         >
-                            <option value="all">
-                                All Locations
-                            </option>
-
+                            <option value="all">All Locations</option>
                             {locations.map((item) => (
-                                <option
-                                    key={item}
-                                    value={item}
-                                >
+                                <option key={item} value={item}>
                                     {item}
                                 </option>
                             ))}
-
                         </select>
-
                     </div>
 
-                    {/* Status */}
-
-                    <div className="filter-select-wrapper small">
-
+                    <div className="filter-select-wrapper">
                         <select
-                            className="filter-select"
                             value={status}
-                            onChange={(e) => setStatus(e.target.value)}
+                            onChange={(event) =>
+                                setStatus(event.target.value)
+                            }
                         >
-                            <option value="all">
-                                All Statuses
-                            </option>
-
-                            <option value="in-progress">
-                                In Progress
-                            </option>
-
-                            <option value="reviewing">
-                                Reviewing
-                            </option>
-
-                            <option value="resolved">
-                                Resolved
-                            </option>
-
+                            <option value="all">All Statuses</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="reviewing">Under Review</option>
+                            <option value="inProgress">In Progress</option>
+                            <option value="resolved">Resolved</option>
                         </select>
-
                     </div>
 
-                    {/* Sort */}
-
-                    <div className="sort-dropdown">
-
+                    <div className="sort-wrapper">
                         <button
                             type="button"
-                            className="filter-select sort"
-                            onClick={() => setSortOpen((prev) => !prev)}
+                            className="sort-button"
+                            onClick={() =>
+                                setSortOpen((previous) => !previous)
+                            }
                         >
-
-                            <span>
-                                {sort === "most-upvoted"
-                                    ? "Most Upvoted"
-                                    : "Most Recent"}
-                            </span>
-
                             <ArrowUpDown size={15} />
-
+                            <span>{selectedSort.label}</span>
                             <ChevronDown
-                                size={15}
-                                className={
-                                    sortOpen
-                                        ? "sort-arrow-open"
-                                        : ""
-                                }
+                                size={14}
+                                className={sortOpen ? "rotate" : ""}
                             />
-
                         </button>
 
                         {sortOpen && (
+                            <div className="sort-dropdown">
+                                {sortOptions.map((option) => {
+                                    const Icon = option.icon;
 
-                            <div className="sort-menu">
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={option.value}
+                                            className={`sort-option ${
+                                                sort === option.value
+                                                    ? "active"
+                                                    : ""
+                                            }`}
+                                            onClick={() => {
+                                                setSort(option.value);
+                                                setSortOpen(false);
+                                            }}
+                                        >
+                                            <span>
+                                                <Icon size={14} />
+                                                {option.label}
+                                            </span>
 
-                                <button
-                                    type="button"
-                                    className={`sort-option ${
-                                        sort === "most-upvoted"
-                                            ? "selected"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        setSort("most-upvoted");
-                                        setSortOpen(false);
-                                    }}
-                                >
-
-                                    <span>
-                                        Most Upvoted
-                                    </span>
-
-                                    {sort === "most-upvoted" && (
-                                        <span className="sort-check">
-                                            ✓
-                                        </span>
-                                    )}
-
-                                </button>
-
-                                <button
-                                    type="button"
-                                    className={`sort-option ${
-                                        sort === "newest"
-                                            ? "selected"
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        setSort("newest");
-                                        setSortOpen(false);
-                                    }}
-                                >
-
-                                    <span>
-                                        Most Recent
-                                    </span>
-
-                                    {sort === "newest" && (
-                                        <span className="sort-check">
-                                            ✓
-                                        </span>
-                                    )}
-
-                                </button>
-
+                                            {sort === option.value && (
+                                                <Check size={14} />
+                                            )}
+                                        </button>
+                                    );
+                                })}
                             </div>
-
                         )}
-
                     </div>
-
-                    {/* Reset */}
 
                     <button
                         type="button"
@@ -291,204 +445,138 @@ function Explore({
                         onClick={resetFilters}
                     >
                         <RotateCcw size={14} />
-                        <span>Reset</span>
+                        Reset
                     </button>
-
                 </div>
 
-                {/* Active Filters */}
+                <div className="filter-bottom-row">
+                    <div className="active-filters">
+                        <span className="active-label">FILTERS</span>
 
-                <div className="active-filter-row">
-
-                    <span className="active-label">
-                        ACTIVE:
-                    </span>
-
-                    {category !== "all" && (
-                        <span className="filter-chip">
-                            Category: {category} ×
-                        </span>
-                    )}
-
-                    {location !== "all" && (
-                        <span className="filter-chip">
-                            Location: {location} ×
-                        </span>
-                    )}
-
-                    {status !== "all" && (
-                        <span className="filter-chip">
-                            Status: {status} ×
-                        </span>
-                    )}
-
-                    {search && (
-                        <span className="filter-chip">
-                            Search: {search} ×
-                        </span>
-                    )}
-
-                    {!search &&
-                        category === "all" &&
-                        location === "all" &&
-                        status === "all" && (
-                            <span className="filter-chip">
-                                Radius: 5 km
+                        {activeFilters.length === 0 ? (
+                            <span className="no-active-filters">
+                                All community issues
                             </span>
+                        ) : (
+                            activeFilters.map((filter) => (
+                                <button
+                                    type="button"
+                                    className="active-filter-chip"
+                                    key={`${filter.type}-${filter.label}`}
+                                    onClick={() => clearFilter(filter.type)}
+                                >
+                                    {filter.label}
+                                    <X size={12} />
+                                </button>
+                            ))
                         )}
+                    </div>
 
-                    <span className="realtime-text">
-                        Showing real-time community records
+                    <span className="filter-result-note">
+                        Showing approved community issues
                     </span>
-
                 </div>
-
             </section>
 
-            {/* Results Summary */}
-
             <section className="results-summary">
-
                 <div className="results-left">
-
                     <strong>
-                        {total} Issues Found
+                        {issues.length}{" "}
+                        {issues.length === 1 ? "Issue" : "Issues"} Found
                     </strong>
-
-                    <span className="radius-badge">
-                        Within 5km radius
-                    </span>
-
+                    <span className="radius-badge">Community-wide</span>
                 </div>
 
                 <div className="results-status">
+                    <span className="progress-label">Community Progress</span>
 
-                    <span>
-                        Filter summary:
+                    <span className="status-summary submitted">
+                        <i />
+                        {statusCounts.submitted || 0} Submitted
                     </span>
 
                     <span className="status-summary orange">
-                        ● {statusCounts.inProgress} In Progress
+                        <i />
+                        {statusCounts.inProgress || 0} In Progress
                     </span>
 
                     <span className="status-summary blue">
-                        ● {statusCounts.reviewing} Reviewing
+                        <i />
+                        {statusCounts.reviewing || 0} Under Review
                     </span>
 
                     <span className="status-summary green">
-                        ● {statusCounts.resolved} Resolved
+                        <i />
+                        {statusCounts.resolved || 0} Resolved
                     </span>
-
                 </div>
-
             </section>
 
-            {/* Content */}
-
-            <section className="explore-content">
-
-                <div
-                    className={
-                        view === "compact"
-                            ? "issues-grid compact-view"
-                            : "issues-grid"
-                    }
+            {error ? (
+                <section className="explore-message">
+                    <div className="message-icon error">
+                        <CircleAlert size={22} />
+                    </div>
+                    <h3>Unable to load issues</h3>
+                    <p>{error}</p>
+                    <button
+                        type="button"
+                        className="retry-button"
+                        onClick={onRetry}
+                    >
+                        <RotateCcw size={15} />
+                        Try Again
+                    </button>
+                </section>
+            ) : loading ? (
+                <section className="explore-message">
+                    <div className="loading-spinner" />
+                    <h3>Loading community issues</h3>
+                    <p>Fetching the latest approved issues...</p>
+                </section>
+            ) : issues.length === 0 ? (
+                <section className="explore-message">
+                    <div className="message-icon">
+                        <Search size={22} />
+                    </div>
+                    <h3>No issues found</h3>
+                    <p>
+                        Try changing your filters or search for something else.
+                    </p>
+                    <button
+                        type="button"
+                        className="retry-button"
+                        onClick={resetFilters}
+                    >
+                        <RotateCcw size={15} />
+                        Clear Filters
+                    </button>
+                </section>
+            ) : (
+                <section
+                    className={`issues-grid ${
+                        view === "compact" ? "compact-view" : ""
+                    }`}
                 >
-
-                    {issues.length > 0 ? (
-
-                        issues.map((issue) => (
-                            <IssueCard
-                                key={issue._id}
-                                issue={issue}
-                            />
-                        ))
-
-                    ) : (
-
-                        <div className="no-issues">
-
-                            <h3>
-                                No issues found
-                            </h3>
-
-                            <p>
-                                Try changing your search or filters.
-                            </p>
-
-                        </div>
-
-                    )}
-
-                </div>
-
-                {/* Nearby Issues */}
-
-                <div className="nearby-panel">
-
-                    <div className="nearby-header">
-
-                        <div>
-
-                            <h2>
-                                Issues Near You
-                            </h2>
-
-                            <p>
-                                Live civic geospatial radar
-                            </p>
-
-                        </div>
-
-                        <span className="radius-control">
-
-                            <Navigation size={13} />
-
-                            Radius: 5km
-
-                        </span>
-
-                    </div>
-
-                    <div className="radar">
-
-                        <div className="radar-circle circle-one"></div>
-
-                        <div className="radar-circle circle-two"></div>
-
-                        <div className="radar-circle circle-three"></div>
-
-                        <div className="radar-marker center">
-                            ●
-                        </div>
-
-                        <div className="radar-marker green-marker">
-                            <CheckCircle2 size={17} />
-                        </div>
-
-                        <div className="radar-marker orange-marker">
-                            <CircleAlert size={16} />
-                        </div>
-
-                        <div className="radar-marker orange-marker-two">
-                            <CircleAlert size={16} />
-                        </div>
-
-                        <div className="radar-marker blue-marker">
-                            <Wrench size={15} />
-                        </div>
-
-                        <div className="radar-marker purple-marker">
-                            <Trash2 size={15} />
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </div>
+                    {issues.map((issue) => (
+                        <IssueCard
+                            key={issue._id}
+                            issue={issue}
+                            commentCount={getCommentCount(issue)}
+                            onCommentCountChange={(count) =>
+                                handleCommentCountChange(issue._id, count)
+                            }
+                            onVote={onVote}
+                            voting={votingIds.includes(issue._id)}
+                            onView={handleViewIssue}
+                            onToggleSave={onToggleSave}
+                            isSaved={Boolean(issue.isSaved)}
+                            saving={savingIds.includes(String(issue._id))}
+                        />
+                    ))}
+                </section>
+            )}
+        </main>
     );
 }
 
